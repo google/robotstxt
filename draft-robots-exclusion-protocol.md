@@ -41,11 +41,12 @@ appear in all capitals, as shown here.
 The protocol language consists of rule(s) and group(s):
 
 *   **Rule**: A line with a key value pair that defines how a crawler may access
-    URIs. See section {{The Allow and Disallow lines}}.
+    URIs. See section
+    [The Allow and Disallow lines](#the-allow-and-disallow-lines).
 *   **Group**: One or more user-agent lines that is followed by one or more
     rules. The group is terminated by a user-agent line or end of file. See
-    {{User-agent line}}. The last group may have no rules, which means it
-    implicitly allows everything.
+    [The User-agent line](#the-user-agent-line). The last group may have no
+    rules, which means it implicitly allows everything.
 
 ### Formal syntax
 

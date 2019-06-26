@@ -16,15 +16,16 @@
 // File: robots.h
 // -----------------------------------------------------------------------------
 //
-// This file deals with the robots exclusion de-facto standard. More info about
-// this can be found at:
-//   http://www.robotstxt.org/norobots-rfc.txt
+// This file implements the standard defined by the Robots Exclusion Protocol
+// (REP) internet draft (I-D).
+//   https://github.com/google/robotstxt/blob/master/draft-robots-exclusion-protocol.md
 //
 // Google doesn't follow the standard strictly, because there are a lot of
 // non-conforming robots.txt files out there, and we err on the side of
 // disallowing when this seems intended.
 //
-// An external description of how Google handles robots.txt can be found at:
+// An more user-friendly description of how Google handles robots.txt can be
+// found at:
 //   https://developers.google.com/search/reference/robots_txt
 //
 // This library provides a low-level parser for robots.txt (ParseRobotsTxt()),
