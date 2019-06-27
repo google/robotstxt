@@ -119,7 +119,7 @@ These lines indicate whether accessing a URI that matches the corresponding path
 is allowed or disallowed.
 
 To evaluate if access to a URI is allowed, a robot MUST match the paths in allow
-and disallow lines against the URI. The matching SHOULD be case sensitive. The
+and disallow rules against the URI. The matching SHOULD be case sensitive. The
 most specific match found MUST be used. The most specific match is the match
 that has the most octets. If an allow and disallow rule is equivalent, the allow
 SHOULD be used. If no match is found amongst the rules in a group for a matching
@@ -211,8 +211,8 @@ the parseable rules.
 
 The server may respond to a robots.txt fetch request with a redirect, such as
 HTTP 301 and HTTP 302. The crawlers SHOULD follow at least five consecutive
-redirects, even across authorities (eg. hosts in case of HTTP), as defined in
-[RFC1945](https://tools.ietf.org/html/rfc1945).
+redirects, even across authorities (for example hosts in case of HTTP), as
+defined in [RFC1945](https://tools.ietf.org/html/rfc1945).
 
 If a robots.txt file is reached within five consecutive redirects, the
 robots.txt file MUST be fetched, parsed, and its rules followed in the context
@@ -265,7 +265,7 @@ Crawlers MAY impose a parsing limit that MUST be at least 500 kibibytes (KiB).
 
 The following example shows:
 
-*   **foobot**: A regular case. A single user-agent token followed by rules.
+*   **foobot**: A regular case. A single user-agent line followed by rules.
 *   **barbot and bazbot**: A group that's relevant for more than one user-agent.
 *   **quxbot:** Empty group at end of file.
 
