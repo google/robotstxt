@@ -94,7 +94,7 @@ Apache license. See LICENSE for more information.
 
 To learn more about this project:
 
-*   check out the [internet draft](https://github.com/google/robotstxt/blob/master/draft-robots-exclusion-protocol.md),
+*   check out the [internet draft](http://go/robotstxt-standard),
 *   how
     [Google's handling robots.txt](https://developers.google.com/search/reference/robots_txt),
 *   or for a high level overview, the

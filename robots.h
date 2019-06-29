@@ -18,7 +18,7 @@
 //
 // This file implements the standard defined by the Robots Exclusion Protocol
 // (REP) internet draft (I-D).
-//   https://github.com/google/robotstxt/blob/master/draft-robots-exclusion-protocol.md
+//   http://go/robotstxt-standard
 //
 // Google doesn't follow the standard strictly, because there are a lot of
 // non-conforming robots.txt files out there, and we err on the side of
