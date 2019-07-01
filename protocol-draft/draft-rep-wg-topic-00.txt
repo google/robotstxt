@@ -1,6 +1,6 @@
 Network Working Group                                          M. Koster
 Internet-Draft                                Stalworthy Computing, Ltd.
-Intended status: info                                          G. Illyes
+Intended status: Draft Standard                                G. Illyes
 Expires: January 2, 2020                                       H. Zeller
                                                                L. Harvey
                                                                   Google
@@ -12,11 +12,11 @@ Expires: January 2, 2020                                       H. Zeller
 
 Abstract
 
-   This document standardizes and extends the "Robots Exclusion Protocol"
-   <http://www.robotstxt.org/> method originally defined by Martijn Koster
-   in 1996 for service owners to control how content served by their
-   services may be accessed, if at all, by automatic clients known as
-   crawlers.
+   This document standardizes and extends the "Robots Exclusion
+   Protocol" <http://www.robotstxt.org/> method originally defined by
+   Martijn Koster in 1996 for service owners to control how content
+   served by their services may be accessed, if at all, by automatic
+   clients known as crawlers.
 
 Status of This Memo
 
@@ -54,13 +54,9 @@ Copyright Notice
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
-
-
-
 Koster, et al.           Expires January 2, 2020                [Page 1]
 
 Internet-Draft                     I-D                         July 2019
-
 
 Table of Contents
 
@@ -77,13 +73,15 @@ Table of Contents
        2.3.1.  Access results  . . . . . . . . . . . . . . . . . . .   7
      2.4.  Caching . . . . . . . . . . . . . . . . . . . . . . . . .   8
      2.5.  Limits  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     2.6.  Security Considerations . . . . . . . . . . . . . . . . .   8
+     2.7.  IANA Considerations . . . . . . . . . . . . . . . . . . .   8
    3.  Examples  . . . . . . . . . . . . . . . . . . . . . . . . . .   8
      3.1.  Simple example  . . . . . . . . . . . . . . . . . . . . .   8
-     3.2.  Longest Match . . . . . . . . . . . . . . . . . . . . . .   8
+     3.2.  Longest Match . . . . . . . . . . . . . . . . . . . . . .   9
    4.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
      4.2.  URIs  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   9
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   10
 
 1.  Introduction
 
@@ -140,15 +138,19 @@ Internet-Draft                     I-D                         July 2019
 
    robotstxt = *(group / emptyline)
    group = startgroupline                ; We start with a user-agent
-           *(startgroupline / emptyline) ; ... and possibly more user-agents
-           *(rule / emptyline)           ; followed by rules relevant for UAs
+           *(startgroupline / emptyline) ; ... and possibly more
+                                         ; user-agents
+           *(rule / emptyline)           ; followed by rules relevant
+                                         ; for UAs
 
    startgroupline = *WS "user-agent" *WS ":" *WS product-token EOL
 
-   rule = *WS ("allow" / "disallow") *WS ":" *WS (path-pattern / empty-pattern) EOL
+   rule = *WS ("allow" / "disallow") *WS ":"
+          *WS (path-pattern / empty-pattern) EOL
 
-   ; parser implementors: add additional lines you need (for example Sitemaps),
-   ; and be lenient when reading lines that don't conform. Apply Postel's law.
+   ; parser implementors: add additional lines you need (for
+   ; example Sitemaps), and be lenient when reading lines that don't
+   ; conform. Apply Postel's law.
 
    product-token = identifier / "*"
    path-pattern = "/" *(UTF8-char-noctl) ; valid URI path pattern
@@ -156,9 +158,15 @@ Internet-Draft                     I-D                         July 2019
 
    identifier = 1*(%x2d / %x41-5a / %x5f / %x61-7a)
    comment = "#"*(UTF8-char-noctl / WS / "#")
-   emptyline = EOL EOL = *WS [comment] NL ; end-of-line may have optional trailing comment
+   emptyline = EOL EOL = *WS [comment] NL ; end-of-line may have
+                                          ; optional trailing comment
    NL = %x0D / %x0A / %x0D.0A
    WS = %x20 / %x09
+
+
+Koster, et al.           Expires January 2, 2020                [Page 3]
+
+Internet-Draft                     I-D                         July 2019
 
    ; UTF8 derived from RFC3629, but excluding control characters
 
@@ -167,25 +175,17 @@ Internet-Draft                     I-D                         July 2019
    UTF8-2 = %xC2-DF UTF8-tail
    UTF8-3 = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2( UTF8-tail ) /
             %xED %x80-9F UTF8-tail / %xEE-EF 2( UTF8-tail )
-
    UTF8-4 = %xF0 %x90-BF 2( UTF8-tail ) / %xF1-F3 3( UTF8-tail ) /
             %xF4 %x80-8F 2( UTF8-tail )
 
    UTF8-tail = %x80-BF
 
-
-
-Koster, et al.           Expires January 2, 2020                [Page 3]
-
-Internet-Draft                     I-D                         July 2019
-
-
 2.2.1.  The user-agent line
 
    Crawlers set a product token to find relevant groups.  The product
    token MUST contain only "a-zA-Z_-" characters.  The product token
-   SHOULD be part of the identification string that the crawler sends to
-   the service (for example, in the case of HTTP, the product name
+   SHOULD be part of the identification string that the crawler sends
+   to the service (for example, in the case of HTTP, the product name
    SHOULD be in the user-agent header).  The identification string
    SHOULD describe the purpose of the crawler.  Here's an example of an
    HTTP header with a link pointing to a page describing the purpose of
@@ -220,7 +220,6 @@ Internet-Draft                     I-D                         July 2019
    used.  The most specific match is the match that has the most octets.
    If an allow and disallow rule is equivalent, the allow SHOULD be
    used.  If no match is found amongst the rules in a group for a
-
 
 
 Koster, et al.           Expires January 2, 2020                [Page 4]
@@ -327,7 +326,7 @@ Internet-Draft                     I-D                         July 2019
 
    As per RFC3986 [1], the URI of the robots.txt is:
 
-   "scheme:[//authority]/robots.txt "
+   "scheme:[//authority]/robots.txt"
 
    For example, in the context of HTTP or FTP, the URI is:
 
@@ -355,8 +354,8 @@ Internet-Draft                     I-D                         July 2019
 
    The server may respond to a robots.txt fetch request with a redirect,
    such as HTTP 301 and HTTP 302.  The crawlers SHOULD follow at least
-   five consecutive redirects, even across authorities (for example hosts in
-   case of HTTP), as defined in RFC1945 [7].
+   five consecutive redirects, even across authorities (for example
+   hosts in case of HTTP), as defined in RFC1945 [7].
 
    If a robots.txt file is reached within five consecutive redirects,
    the robots.txt file MUST be fetched, parsed, and its rules followed
@@ -413,6 +412,16 @@ Internet-Draft                     I-D                         July 2019
    Crawlers MAY impose a parsing limit that MUST be at least 500
    kibibytes (KiB).
 
+2.6.  Security Considerations
+
+   The Robots Exclusion Protocol MUST NOT be used as a form of security
+   measures. Listing URIs in the robots.txt file exposes the URI
+   publicly and thus making the URIs discoverable.
+
+2.7.  IANA Considerations.
+
+   This document has no actions for IANA.
+
 3.  Examples
 
 3.1.  Simple example
@@ -421,21 +430,28 @@ Internet-Draft                     I-D                         July 2019
 
    o  *foobot*: A regular case.  A single user-agent token followed by
       rules.
-
    o  *barbot and bazbot*: A group that's relevant for more than one
       user-agent.
-
    o  *quxbot:* Empty group at end of file.
 
-   User-Agent : foobot Disallow : /example/page.html Disallow :
-   /example/disallowed.gif
+Koster, et al.           Expires January 2, 2020                [Page 8]
 
-   User-Agent : barbot User-Agent : bazbot Allow : /example/page.html
+Internet-Draft                     I-D                         July 2019
+
+   <CODE BEGINS>
+   User-Agent : foobot
+   Disallow : /example/page.html
+   Disallow : /example/disallowed.gif
+
+   User-Agent : barbot
+   User-Agent : bazbot
+   Allow : /example/page.html
    Disallow : /example/disallowed.gif
 
    User-Agent: quxbot
 
-   /eof
+   EOF
+   <CODE ENDS>
 
 3.2.  Longest Match
 
@@ -444,16 +460,11 @@ Internet-Draft                     I-D                         July 2019
    /example/page/disallowed.gif MUST be used for the URI
    example.com/example/page/disallow.gif .
 
-
-
-
-Koster, et al.           Expires January 2, 2020                [Page 8]
-
-Internet-Draft                     I-D                         July 2019
-
-
-   User-Agent : foobot Allow : /example/page/ Disallow : /example/page/
-   disallowed.gif
+   <CODE BEGINS>
+   User-Agent : foobot
+   Allow : /example/page/
+   Disallow : /example/page/disallowed.gif
+   <CODE ENDS>
 
 4.  References
 
@@ -477,6 +488,10 @@ Internet-Draft                     I-D                         July 2019
    [5] https://tools.ietf.org/html/rfc3629
 
    [6] https://tools.ietf.org/html/rfc2046
+
+Koster, et al.           Expires January 2, 2020                [Page 9]
+
+Internet-Draft                     I-D                         July 2019
 
    [7] https://tools.ietf.org/html/rfc1945
 
@@ -511,5 +526,4 @@ Authors' Address
 
 
 
-
-Koster, et al.           Expires January 2, 2020                [Page 9]
+Koster, et al.           Expires January 2, 2020               [Page 10]
