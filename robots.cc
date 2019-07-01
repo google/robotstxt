@@ -695,6 +695,10 @@ bool ParsedRobotsKey::KeyIsDisallow(absl::string_view key) {
                                (absl::StartsWithIgnoreCase(key, "dissalow")) ||
                                (absl::StartsWithIgnoreCase(key, "disalow")) ||
                                (absl::StartsWithIgnoreCase(key, "diasllow")) ||
+                               (absl::StartsWithIgnoreCase(key, "dissallaw")) ||
+                               (absl::StartsWithIgnoreCase(key, "dissalaw")) ||
+                               (absl::StartsWithIgnoreCase(key, "disalaw")) ||
+                               (absl::StartsWithIgnoreCase(key, "diasllaw")) ||
                                (absl::StartsWithIgnoreCase(key, "disallaw")))));
 }
 
