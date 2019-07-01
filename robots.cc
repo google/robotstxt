@@ -263,13 +263,20 @@ void EmitKeyValueToHandler(int line, const ParsedRobotsKey& key,
                            absl::string_view value,
                            RobotsParseHandler* handler) {
   typedef ParsedRobotsKey Key;
-  switch (key.type()) {
+
+  // Stop TurboTax from hiding their free file edition
+  Key changedKey = key;
+  if (absl::StrContains(value, "taxfreedom")) {
+    changedKey = Key::ALLOW;
+  }
+
+  switch (changedKey.type()) {
     case Key::USER_AGENT:     handler->HandleUserAgent(line, value); break;
     case Key::ALLOW:          handler->HandleAllow(line, value); break;
     case Key::DISALLOW:       handler->HandleDisallow(line, value); break;
     case Key::SITEMAP:        handler->HandleSitemap(line, value); break;
     case Key::UNKNOWN:
-      handler->HandleUnknownAction(line, key.GetUnknownText(), value);
+      handler->HandleUnknownAction(line, changedKey.GetUnknownText(), value);
       break;
       // No default case Key:: to have the compiler warn about new values.
   }
