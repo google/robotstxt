@@ -42,7 +42,7 @@ bool LoadFile(const std::string& filename, std::string* result) {
   if (file.is_open()) {
     size_t size = file.tellg();
     std::vector<char> buffer(size);
-    file.seekg(0, std::ios::beg);
+    file.seekg (0, std::ios::beg);
     file.read(buffer.data(), size);
     file.close();
     if (!file) return false;  // file reading error (failbit or badbit).

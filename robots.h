@@ -176,7 +176,7 @@ class RobotsMatcher : protected RobotsParseHandler {
   // This structure stores the information associated with a match (e.g. when a
   // Disallow is matched) as priority of the match and line matching.
   //
-  // The priority is initialized with a negative value to make sure that a match
+  // The priority is inialized with a negative value to make sure that a match
   // of priority 0 is higher priority than no match at all.
   class Match {
    private:

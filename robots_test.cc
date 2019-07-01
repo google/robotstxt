@@ -79,7 +79,7 @@ TEST(RobotsUnittest, ID_LineSyntax_Line) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt_incorrect_accepted, "FooBot", url));
 }
 
-// A group is one or more user-agent line followed by rules, and terminated
+// A group is one or more user-agent line followed by rules, and termindated
 // by a another user-agent line. Rules for same user-agents are combined
 // opaquely into one group. Rules outside groups are ignored.
 // See REP I-D section "Protocol Definition".
@@ -248,7 +248,7 @@ TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
   EXPECT_TRUE(IsUserAgentAllowed(robotstxt_only_specific, "QuxBot", url));
 }
 
-// Matching rules against URIs is case sensitive.
+// Matching rules againt URIs is case sensitive.
 // See REP I-D section "The Allow and Disallow lines".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.2
 TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
@@ -919,7 +919,7 @@ TEST(RobotsUnittest, ID_NonStandardLineExample_Sitemap) {
     googlebot::ParseRobotsTxt(robotstxt, &report);
     EXPECT_EQ(sitemap_loc, report.sitemap());
   }
-  // A sitemap line may appear anywhere in the file.
+  // A sitemap line may appear anyhere in the file.
   {
     std::string robotstxt;
     std::string sitemap_loc = "http://foo.bar/sitemap.xml";

@@ -66,7 +66,7 @@ class RobotsMatchStrategy {
   static bool Matches(absl::string_view path, absl::string_view pattern);
 };
 
-// Returns true if URI path matches the specified pattern. Pattern is anchored
+// Returns true iff URI path matches the specified pattern. Pattern is anchored
 // at the beginning of path. '$' is special only at the end of pattern.
 //
 // Since 'path' and 'pattern' are both externally determined (by the webmaster),
@@ -88,14 +88,13 @@ class RobotsMatchStrategy {
   numpos = 1;
 
   for (auto pat = pattern.begin(); pat != pattern.end(); ++pat) {
-    if (*pat == '$' && pat + 1 == pattern.end()) {
-      return (pos[numpos-1] == pathlen);
-    }
     if (*pat == '*') {
       numpos = pathlen - pos[0] + 1;
       for (int i = 1; i < numpos; i++) {
         pos[i] = pos[i-1] + 1;
       }
+    } else if (*pat == '$' && pat + 1 == pattern.end()) {
+      return (pos[numpos-1] == pathlen);
     } else {
       // Includes '$' when not at end of pattern.
       int newnumpos = 0;
@@ -149,9 +148,9 @@ std::string GetPathParamsQuery(const std::string& url) {
       return "/" + url.substr(path_start, path_end - path_start);
     }
     return url.substr(path_start, path_end - path_start);
+  } else {
+    return "/";
   }
-
-  return "/";
 }
 
 // MaybeEscapePattern is not in anonymous namespace to allow testing.
@@ -161,7 +160,7 @@ std::string GetPathParamsQuery(const std::string& url) {
 //     %aa ==> %AA
 // When the function returns, (*dst) either points to src, or is newly
 // allocated.
-// Returns true if dst was newly allocated.
+// Returns true if scr was newly allocated.
 bool MaybeEscapePattern(const char* src, char** dst) {
   int num_to_escape = 0;
   bool need_capitalize = false;
@@ -195,7 +194,7 @@ bool MaybeEscapePattern(const char* src, char** dst) {
       (*dst)[j++] = src[i++];
       (*dst)[j++] = absl::ascii_toupper(src[i++]);
       (*dst)[j++] = absl::ascii_toupper(src[i]);
-    // (b) %-escape octets whose highest bit is set. These are outside the
+    // (b) %-escape octets whose highest bit is set. These are outsisde the
     // ASCII range.
     } else if (src[i] & 0x80) {
       (*dst)[j++] = '%';
@@ -386,7 +385,7 @@ void RobotsTxtParser::Parse() {
   // Certain browsers limit the URL length to 2083 bytes. In a robots.txt, it's
   // fairly safe to assume any valid line isn't going to be more than many times
   // that max url length of 2KB. We want some padding for
-  // UTF-8 encoding/nulls/etc. but a much smaller bound would be okay as well.
+  // URF-8 encoding/nulls/etc. but a much smaller bound would be okay as well.
   // If so, we can ignore the chars on a line past that.
   const int kMaxLineLen = 2083 * 8;
   // Allocate a buffer used to process the current line.
@@ -435,7 +434,7 @@ void RobotsTxtParser::Parse() {
   delete [] line_buffer;
 }
 
-// Implements the default robots.txt matching strategy. The maximum number of
+// Implements the default robots.txt matching strategy.  The maximum number of
 // characters matched by a pattern is returned as its match priority.
 class LongestMatchRobotsMatchStrategy : public RobotsMatchStrategy {
  public:
@@ -507,17 +506,17 @@ bool RobotsMatcher::OneAgentAllowedByRobots(absl::string_view robots_txt,
 bool RobotsMatcher::disallow() const {
   if (allow_.specific.priority() > 0 || disallow_.specific.priority() > 0) {
     return (disallow_.specific.priority() > allow_.specific.priority());
-  }
-  if (ever_seen_specific_agent_) {
+  } else if (ever_seen_specific_agent_) {
     // Matching group for user-agent but either without disallow or empty one,
-    // i.e. priority == 0.
+    // i.e. priority == 0 .
     return false;
+  } else {
+    if (disallow_.global.priority() > 0 || allow_.global.priority() > 0) {
+      return disallow_.global.priority() > allow_.global.priority();
+    } else {
+      return false;
+    }
   }
-
-  if (disallow_.global.priority() > 0 || allow_.global.priority() > 0) {
-    return disallow_.global.priority() > allow_.global.priority();
-  }
-  return false;
 }
 
 bool RobotsMatcher::disallow_ignore_global() const {
@@ -531,8 +530,9 @@ const int RobotsMatcher::matching_line() const {
   if (ever_seen_specific_agent_) {
     return Match::HigherPriorityMatch(disallow_.specific, allow_.specific)
         .line();
+  } else {
+    return Match::HigherPriorityMatch(disallow_.global, allow_.global).line();
   }
-  return Match::HigherPriorityMatch(disallow_.global, allow_.global).line();
 }
 
 void RobotsMatcher::HandleRobotsStart() {
