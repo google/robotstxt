@@ -694,8 +694,22 @@ bool ParsedRobotsKey::KeyIsDisallow(absl::string_view key) {
       (kAllowFrequentTypos && ((absl::StartsWithIgnoreCase(key, "dissallow")) ||
                                (absl::StartsWithIgnoreCase(key, "dissalow")) ||
                                (absl::StartsWithIgnoreCase(key, "disalow")) ||
+                               (absl::StartsWithIgnoreCase(key, "disllow")) ||
+                               (absl::StartsWithIgnoreCase(key, "dasllow")) ||
+                               (absl::StartsWithIgnoreCase(key, "diasllw")) ||
+                               (absl::StartsWithIgnoreCase(key, "diallow")) ||
                                (absl::StartsWithIgnoreCase(key, "diasllow")) ||
-                               (absl::StartsWithIgnoreCase(key, "disallaw")))));
+                               (absl::StartsWithIgnoreCase(key, "disallaw")) ||
+                               
+                               (absl::StartsWithIgnoreCase(key, "dissallov")) ||
+                               (absl::StartsWithIgnoreCase(key, "dissalov")) ||
+                               (absl::StartsWithIgnoreCase(key, "disalov")) ||
+                               (absl::StartsWithIgnoreCase(key, "disllov")) ||
+                               (absl::StartsWithIgnoreCase(key, "dasllov")) ||
+                               (absl::StartsWithIgnoreCase(key, "diasllv")) ||
+                               (absl::StartsWithIgnoreCase(key, "diallov")) ||
+                               (absl::StartsWithIgnoreCase(key, "diasllov")) ||
+                               (absl::StartsWithIgnoreCase(key, "disallav")))));
 }
 
 bool ParsedRobotsKey::KeyIsSitemap(absl::string_view key) {
