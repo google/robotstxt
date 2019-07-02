@@ -694,6 +694,7 @@ bool ParsedRobotsKey::KeyIsDisallow(absl::string_view key) {
       (kAllowFrequentTypos && ((absl::StartsWithIgnoreCase(key, "dissallow")) ||
                                (absl::StartsWithIgnoreCase(key, "dissalow")) ||
                                (absl::StartsWithIgnoreCase(key, "disalow")) ||
+                               (absl::StartsWithIgnoreCase(key, "diaslow")) ||                               
                                (absl::StartsWithIgnoreCase(key, "diasllow")) ||
                                (absl::StartsWithIgnoreCase(key, "disallaw")))));
 }
