@@ -48,13 +48,11 @@ SET(CPACK_SOURCE_IGNORE_FILES
 )
 
 INCLUDE(CPack)
-INCLUDE(CheckFunctionExists)
-INCLUDE(CheckSymbolExists)
 INCLUDE(CheckCCompilerFlag)
-INCLUDE(CheckCSourceCompiles)
 
 ############ dependencies ##############
 
+# abseil-cpp
 IF(MSVC)
     # /wd4005  macro-redefinition
     # /wd4068  unknown pragma
@@ -91,8 +89,6 @@ SET(robots_SRCS
 ADD_EXECUTABLE(robots ${robots_SRCS})
 
 TARGET_LINK_LIBRARIES(robots absl::base absl::container absl::strings)
-
-TARGET_LINK_LIBRARIES(robots ${EXTRA_LIBS})
 
 INSTALL(TARGETS robots DESTINATION bin)
 
