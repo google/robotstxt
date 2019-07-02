@@ -66,7 +66,7 @@ class RobotsMatchStrategy {
   static bool Matches(absl::string_view path, absl::string_view pattern);
 };
 
-// Returns true iff URI path matches the specified pattern. Pattern is anchored
+// Returns true if URI path matches the specified pattern. Pattern is anchored
 // at the beginning of path. '$' is special only at the end of pattern.
 //
 // Since 'path' and 'pattern' are both externally determined (by the webmaster),
@@ -194,7 +194,7 @@ bool MaybeEscapePattern(const char* src, char** dst) {
       (*dst)[j++] = src[i++];
       (*dst)[j++] = absl::ascii_toupper(src[i++]);
       (*dst)[j++] = absl::ascii_toupper(src[i]);
-    // (b) %-escape octets whose highest bit is set. These are outsisde the
+    // (b) %-escape octets whose highest bit is set. These are outside the
     // ASCII range.
     } else if (src[i] & 0x80) {
       (*dst)[j++] = '%';

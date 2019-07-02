@@ -123,7 +123,7 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BazBot", url_foo));
 }
 
-// REP lines are case insensitive. See REP I-D section "Protocol Definition".
+// REP lines are case-insensitive. See REP I-D section "Protocol Definition".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.1
 TEST(RobotsUnittest, ID_REPLineNamesCaseInsensitive) {
   const absl::string_view robotstxt_upper =
@@ -168,7 +168,7 @@ TEST(RobotsUnittest, ID_VerifyValidUserAgentsToObey) {
   EXPECT_FALSE(RobotsMatcher::IsValidUserAgentToObey("Foobot Bar"));
 }
 
-// User-agent line values are case insensitive. See REP I-D section "The
+// User-agent line values are case-insensitive. See REP I-D section "The
 // user-agent line".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.1
 TEST(RobotsUnittest, ID_UserAgentValueCaseInsensitive) {
@@ -248,7 +248,7 @@ TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
   EXPECT_TRUE(IsUserAgentAllowed(robotstxt_only_specific, "QuxBot", url));
 }
 
-// Matching rules againt URIs is case sensitive.
+// Matching rules againt URIs is case-sensitive.
 // See REP I-D section "The Allow and Disallow lines".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.2
 TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
