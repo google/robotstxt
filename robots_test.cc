@@ -248,7 +248,7 @@ TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
   EXPECT_TRUE(IsUserAgentAllowed(robotstxt_only_specific, "QuxBot", url));
 }
 
-// Matching rules againt URIs is case sensitive.
+// Matching rules against URIs is case sensitive.
 // See REP I-D section "The Allow and Disallow lines".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.2
 TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
