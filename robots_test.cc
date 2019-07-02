@@ -79,7 +79,7 @@ TEST(RobotsUnittest, ID_LineSyntax_Line) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt_incorrect_accepted, "FooBot", url));
 }
 
-// A group is one or more user-agent line followed by rules, and termindated
+// A group is one or more user-agent line followed by rules, and terminated
 // by a another user-agent line. Rules for same user-agents are combined
 // opaquely into one group. Rules outside groups are ignored.
 // See REP I-D section "Protocol Definition".
