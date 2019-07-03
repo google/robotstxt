@@ -28,7 +28,7 @@ single URL and user-agent against a robots.txt.
 ## Building the library
 
 [Bazel](https://bazel.build/) is the official build system for the library,
-which is supported on most major platforms (Linux, Windows, MacOS, for example)
+which is supported on most major platforms (Linux, Windows, macOS, for example)
 and compilers.
 
 CMake support may be added in a future release. If you want to help us with
@@ -39,14 +39,14 @@ adding CMake support, pull requests are highly welcome!
 We included with the library a small binary to test a local robots.txt against a
 user-agent and URL. Running the included binary requires:
 
-*   A compatible platform (e.g. Windows, Mac OS X, Linux, etc.). Most platforms
+*   A compatible platform (e.g. Windows, macOS, Linux, etc.). Most platforms
     are fully supported.
 *   A compatible C++ compiler supporting at least C++11. Most major compilers
     are supported.
 *   [Git](https://git-scm.com/) for interacting with the source code repository.
     To install Git, consult the
     [Set Up Git](https://help.github.com/articles/set-up-git/) guide on
-    [GitHub](http://github.com/).
+    [GitHub](https://github.com/).
 *   Although you are free to use your own build system, most of the
     documentation within this guide will assume you are using
     [Bazel](https://bazel.build/). To download and install Bazel (and any of its
@@ -71,8 +71,8 @@ bazel-robots$ bazel build :robots_main
 Target //:robots_main up-to-date:
   bazel-bin/robots_main
 ...
-bazel-robots$ bazel run robots_main -- ~/local/path/to/robots.txt YourBot http://example.com/url
-  user-agent 'YourBot' with url 'http://example.com/url' allowed: YES
+bazel-robots$ bazel run robots_main -- ~/local/path/to/robots.txt YourBot https://example.com/url
+  user-agent 'YourBot' with url 'https://example.com/url' allowed: YES
 ```
 
 ## Notes
