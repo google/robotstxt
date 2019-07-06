@@ -66,8 +66,9 @@ class RobotsMatchStrategy {
   static bool Matches(absl::string_view path, absl::string_view pattern);
 };
 
-// Returns true iff URI path matches the specified pattern. Pattern is anchored
-// at the beginning of path. '$' is special only at the end of pattern.
+// Returns true if and only if URI path matches the specified pattern. Pattern
+// is anchored at the beginning of path. '$' is special only at the end of
+// pattern.
 //
 // Since 'path' and 'pattern' are both externally determined (by the webmaster),
 // we make sure to have acceptable worst-case performance.
@@ -194,7 +195,7 @@ bool MaybeEscapePattern(const char* src, char** dst) {
       (*dst)[j++] = src[i++];
       (*dst)[j++] = absl::ascii_toupper(src[i++]);
       (*dst)[j++] = absl::ascii_toupper(src[i]);
-    // (b) %-escape octets whose highest bit is set. These are outsisde the
+    // (b) %-escape octets whose highest bit is set. These are outside the
     // ASCII range.
     } else if (src[i] & 0x80) {
       (*dst)[j++] = '%';
@@ -385,7 +386,7 @@ void RobotsTxtParser::Parse() {
   // Certain browsers limit the URL length to 2083 bytes. In a robots.txt, it's
   // fairly safe to assume any valid line isn't going to be more than many times
   // that max url length of 2KB. We want some padding for
-  // URF-8 encoding/nulls/etc. but a much smaller bound would be okay as well.
+  // UTF-8 encoding/nulls/etc. but a much smaller bound would be okay as well.
   // If so, we can ignore the chars on a line past that.
   const int kMaxLineLen = 2083 * 8;
   // Allocate a buffer used to process the current line.
@@ -434,7 +435,7 @@ void RobotsTxtParser::Parse() {
   delete [] line_buffer;
 }
 
-// Implements the default robots.txt matching strategy.  The maximum number of
+// Implements the default robots.txt matching strategy. The maximum number of
 // characters matched by a pattern is returned as its match priority.
 class LongestMatchRobotsMatchStrategy : public RobotsMatchStrategy {
  public:
@@ -508,7 +509,7 @@ bool RobotsMatcher::disallow() const {
     return (disallow_.specific.priority() > allow_.specific.priority());
   } else if (ever_seen_specific_agent_) {
     // Matching group for user-agent but either without disallow or empty one,
-    // i.e. priority == 0 .
+    // i.e. priority == 0.
     return false;
   } else {
     if (disallow_.global.priority() > 0 || allow_.global.priority() > 0) {
