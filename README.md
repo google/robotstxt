@@ -46,7 +46,7 @@ user-agent and URL. Running the included binary requires:
 *   [Git](https://git-scm.com/) for interacting with the source code repository.
     To install Git, consult the
     [Set Up Git](https://help.github.com/articles/set-up-git/) guide on
-    [GitHub](http://github.com/).
+    [GitHub](https://github.com/).
 *   Although you are free to use your own build system, most of the
     documentation within this guide will assume you are using
     [Bazel](https://bazel.build/). To download and install Bazel (and any of its

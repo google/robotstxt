@@ -248,7 +248,7 @@ TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
   EXPECT_TRUE(IsUserAgentAllowed(robotstxt_only_specific, "QuxBot", url));
 }
 
-// Matching rules againt URIs is case sensitive.
+// Matching rules against URIs is case sensitive.
 // See REP I-D section "The Allow and Disallow lines".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.2
 TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
@@ -919,7 +919,7 @@ TEST(RobotsUnittest, ID_NonStandardLineExample_Sitemap) {
     googlebot::ParseRobotsTxt(robotstxt, &report);
     EXPECT_EQ(sitemap_loc, report.sitemap());
   }
-  // A sitemap line may appear anyhere in the file.
+  // A sitemap line may appear anywhere in the file.
   {
     std::string robotstxt;
     std::string sitemap_loc = "http://foo.bar/sitemap.xml";
