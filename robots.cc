@@ -160,7 +160,7 @@ std::string GetPathParamsQuery(const std::string& url) {
 //     %aa ==> %AA
 // When the function returns, (*dst) either points to src, or is newly
 // allocated.
-// Returns true if scr was newly allocated.
+// Returns true if dst was newly allocated.
 bool MaybeEscapePattern(const char* src, char** dst) {
   int num_to_escape = 0;
   bool need_capitalize = false;
