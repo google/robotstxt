@@ -27,14 +27,7 @@ single URL and user-agent against a robots.txt.
 
 ## Building the library
 
-[Bazel](https://bazel.build/) is the official build system for the library,
-which is supported on most major platforms (Linux, Windows, macOS, for example)
-and compilers.
-
-CMake support may be added in a future release. If you want to help us with
-adding CMake support, pull requests are highly welcome!
-
-## Quickstart
+### Quickstart
 
 We included with the library a small binary to test a local robots.txt against a
 user-agent and URL. Running the included binary requires:
@@ -47,11 +40,16 @@ user-agent and URL. Running the included binary requires:
     To install Git, consult the
     [Set Up Git](https://help.github.com/articles/set-up-git/) guide on
     [GitHub](https://github.com/).
-*   Although you are free to use your own build system, most of the
-    documentation within this guide will assume you are using
-    [Bazel](https://bazel.build/). To download and install Bazel (and any of its
-    dependencies), consult the
-    [Bazel Installation Guide](https://docs.bazel.build/versions/master/install.html).
+*   Although you are free to use your own build system, this documentation provides
+    guides to build using [Bazel](https://bazel.build) or [CMake](https://cmake.org/).
+    To download and install Bazel (and any of its dependencies), consult the 
+    [Bazel Installation Guide](https://docs.bazel.build/versions/master/install.html)
+
+#### Building with Bazel
+
+[Bazel](https://bazel.build/) is the official build system for the library,
+which is supported on most major platforms (Linux, Windows, MacOS, for example)
+and compilers.
 
 To build and run the binary:
 
@@ -72,6 +70,38 @@ Target //:robots_main up-to-date:
   bazel-bin/robots_main
 ...
 bazel-robots$ bazel run robots_main -- ~/local/path/to/robots.txt YourBot https://example.com/url
+  user-agent 'YourBot' with url 'https://example.com/url' allowed: YES
+```
+
+#### Building with CMake
+
+[CMake](https://cmake.org) is the community-supported build system for the library.
+
+To build the library using CMake, just follow the steps below:
+
+```bash
+$ git clone https://github.com/google/robotstxt.git robotstxt
+Cloning into 'robotstxt'...
+...
+$ cd robotstxt/
+...
+$ mkdir c-build && cd c-build
+...
+$ cmake .. -DENABLE_TESTS=1
+...
+$ make
+...
+$ make tests
+Running tests...
+Test project robotstxt/c-build
+    Start 1: robots-test
+1/1 Test #1: robots-test ......................   Passed    0.02 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.02 sec
+...
+$ robots ~/local/path/to/robots.txt YourBot https://example.com/url
   user-agent 'YourBot' with url 'https://example.com/url' allowed: YES
 ```
 
