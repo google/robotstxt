@@ -66,9 +66,8 @@ class RobotsMatchStrategy {
   static bool Matches(absl::string_view path, absl::string_view pattern);
 };
 
-// Returns true if and only if URI path matches the specified pattern. Pattern
-// is anchored at the beginning of path. '$' is special only at the end of
-// pattern.
+// Returns true if URI path matches the specified pattern. Pattern is anchored
+// at the beginning of path. '$' is special only at the end of pattern.
 //
 // Since 'path' and 'pattern' are both externally determined (by the webmaster),
 // we make sure to have acceptable worst-case performance.
