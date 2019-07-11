@@ -1,14 +1,14 @@
 Network Working Group                                          M. Koster
 Internet-Draft                                Stalworthy Computing, Ltd.
 Intended status: Draft Standard                                G. Illyes
-Expires: January 2, 2020                                       H. Zeller
+Expires: January 9, 2020                                       H. Zeller
                                                                L. Harvey
                                                                   Google
-                                                           July 01, 2019
+                                                           July 07, 2019
 
 
                        Robots Exclusion Protocol
-                         draft-rep-wg-topic-00
+                         draft-koster-rep-00
 
 Abstract
 
@@ -37,7 +37,7 @@ Status of This Memo
    be created, except to format it for publication as an RFC or to
    translate it into languages other than English.
 
-   This Internet-Draft will expire on January 2, 2020.
+   This Internet-Draft will expire on January 9, 2020.
 
 Copyright Notice
 
@@ -54,7 +54,7 @@ Copyright Notice
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
-Koster, et al.           Expires January 2, 2020                [Page 1]
+Koster, et al.           Expires January 9, 2020                [Page 1]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -112,7 +112,7 @@ Table of Contents
 
 
 
-Koster, et al.           Expires January 2, 2020                [Page 2]
+Koster, et al.           Expires January 9, 2020                [Page 2]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -164,7 +164,7 @@ Internet-Draft                     I-D                         July 2019
    WS = %x20 / %x09
 
 
-Koster, et al.           Expires January 2, 2020                [Page 3]
+Koster, et al.           Expires January 9, 2020                [Page 3]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -222,7 +222,7 @@ Internet-Draft                     I-D                         July 2019
    used.  If no match is found amongst the rules in a group for a
 
 
-Koster, et al.           Expires January 2, 2020                [Page 4]
+Koster, et al.           Expires January 9, 2020                [Page 4]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -278,7 +278,7 @@ Internet-Draft                     I-D                         July 2019
 
 
 
-Koster, et al.           Expires January 2, 2020                [Page 5]
+Koster, et al.           Expires January 9, 2020                [Page 5]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -334,7 +334,7 @@ Internet-Draft                     I-D                         July 2019
 
 
 
-Koster, et al.           Expires January 2, 2020                [Page 6]
+Koster, et al.           Expires January 9, 2020                [Page 6]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -390,7 +390,7 @@ Internet-Draft                     I-D                         July 2019
 
 
 
-Koster, et al.           Expires January 2, 2020                [Page 7]
+Koster, et al.           Expires January 9, 2020                [Page 7]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -434,7 +434,7 @@ Internet-Draft                     I-D                         July 2019
       user-agent.
    o  *quxbot:* Empty group at end of file.
 
-Koster, et al.           Expires January 2, 2020                [Page 8]
+Koster, et al.           Expires January 9, 2020                [Page 8]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -489,7 +489,7 @@ Internet-Draft                     I-D                         July 2019
 
    [6] https://tools.ietf.org/html/rfc2046
 
-Koster, et al.           Expires January 2, 2020                [Page 9]
+Koster, et al.           Expires January 9, 2020                [Page 9]
 
 Internet-Draft                     I-D                         July 2019
 
@@ -526,4 +526,4 @@ Authors' Address
 
 
 
-Koster, et al.           Expires January 2, 2020               [Page 10]
+Koster, et al.           Expires January 9, 2020               [Page 10]

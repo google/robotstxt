@@ -14,7 +14,7 @@
 //
 // This file tests the robots.txt parsing and matching code found in robots.cc
 // against the current Robots Exclusion Protocol (REP) internet draft (I-D).
-// https://tools.ietf.org/html/draft-rep-wg-topic
+// https://tools.ietf.org/html/draft-koster-rep
 #include "robots.h"
 
 #include <string>
@@ -57,7 +57,7 @@ TEST(RobotsUnittest, GoogleOnly_SystemTest) {
 //     allow: <value>
 //     disallow: <value>
 // See REP I-D section "Protocol Definition".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.1
+// https://tools.ietf.org/html/draft-koster-rep#section-2.1
 //
 // Google specific: webmasters sometimes miss the colon separator, but it's
 // obvious what they mean by "disallow /", so we assume the colon if it's
@@ -83,7 +83,7 @@ TEST(RobotsUnittest, ID_LineSyntax_Line) {
 // by a another user-agent line. Rules for same user-agents are combined
 // opaquely into one group. Rules outside groups are ignored.
 // See REP I-D section "Protocol Definition".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.1
+// https://tools.ietf.org/html/draft-koster-rep#section-2.1
 TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   const absl::string_view robotstxt =
       "allow: /foo/bar/\n"
@@ -124,7 +124,7 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
 }
 
 // REP lines are case insensitive. See REP I-D section "Protocol Definition".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.1
+// https://tools.ietf.org/html/draft-koster-rep#section-2.1
 TEST(RobotsUnittest, ID_REPLineNamesCaseInsensitive) {
   const absl::string_view robotstxt_upper =
       "USER-AGENT: FooBot\n"
@@ -151,7 +151,7 @@ TEST(RobotsUnittest, ID_REPLineNamesCaseInsensitive) {
 
 // A user-agent line is expected to contain only [a-zA-Z_-] characters and must
 // not be empty. See REP I-D section "The user-agent line".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.1
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
 TEST(RobotsUnittest, ID_VerifyValidUserAgentsToObey) {
   EXPECT_TRUE(RobotsMatcher::IsValidUserAgentToObey("Foobot"));
   EXPECT_TRUE(RobotsMatcher::IsValidUserAgentToObey("Foobot-Bar"));
@@ -170,7 +170,7 @@ TEST(RobotsUnittest, ID_VerifyValidUserAgentsToObey) {
 
 // User-agent line values are case insensitive. See REP I-D section "The
 // user-agent line".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.1
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
 TEST(RobotsUnittest, ID_UserAgentValueCaseInsensitive) {
   const absl::string_view robotstxt_upper =
       "User-Agent: FOO BAR\n"
@@ -206,7 +206,7 @@ TEST(RobotsUnittest, ID_UserAgentValueCaseInsensitive) {
 // them. This is more restrictive than the I-D, since in case of the bad value
 // "Googlebot Images" we'd still obey the rules with "Googlebot".
 // Extends REP I-D section "The user-agent line"
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.1
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
 TEST(RobotsUnittest, GoogleOnly_AcceptUserAgentUpToFirstSpace) {
   EXPECT_FALSE(RobotsMatcher::IsValidUserAgentToObey("Foobot Bar"));
   const absl::string_view robotstxt =
@@ -225,7 +225,7 @@ TEST(RobotsUnittest, GoogleOnly_AcceptUserAgentUpToFirstSpace) {
 // user-agent line with a "*" value, if present. If no group satisfies either
 // condition, or no groups are present at all, no rules apply.
 // See REP I-D section "The user-agent line".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.1
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
 TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
   const absl::string_view robotstxt_empty = "";
   const absl::string_view robotstxt_global =
@@ -250,7 +250,7 @@ TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
 
 // Matching rules againt URIs is case sensitive.
 // See REP I-D section "The Allow and Disallow lines".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.2
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.2
 TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
   const absl::string_view robotstxt_lowercase_url =
       "user-agent: FooBot\n"
@@ -268,7 +268,7 @@ TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
 // match that has the most octets. In case of multiple rules with the same
 // length, the least strict rule must be used.
 // See REP I-D section "The Allow and Disallow lines".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.2
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.2
 TEST(RobotsUnittest, ID_LongestMatch) {
   const std::string url = "http://foo.bar/x/page.html";
   {
@@ -365,7 +365,7 @@ TEST(RobotsUnittest, ID_LongestMatch) {
 // coded character set, and those in the reserved range defined by RFC3986,
 // MUST be percent-encoded as defined by RFC3986 prior to comparison.
 // See REP I-D section "The Allow and Disallow lines".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.2
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.2
 //
 // NOTE: It's up to the caller to percent encode a URL before passing it to the
 // parser. Percent encoding URIs in the rules is unnecessary.
@@ -425,7 +425,7 @@ TEST(RobotsUnittest, ID_Encoding) {
 // $ - end of pattern.
 // * - any number of characters.
 // See REP I-D section "Special Characters".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.3
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.3
 TEST(RobotsUnittest, ID_SpecialCharacters) {
   {
     const absl::string_view robotstxt =
@@ -903,7 +903,7 @@ TEST(RobotsUnittest, ID_UTF8ByteOrderMarkIsSkipped) {
 // Google specific: the I-D allows any line that crawlers might need, such as
 // sitemaps, which Google supports.
 // See REP I-D section "Other records".
-// https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.4
+// https://tools.ietf.org/html/draft-koster-rep#section-2.2.4
 TEST(RobotsUnittest, ID_NonStandardLineExample_Sitemap) {
   RobotsStatsReporter report;
   {

@@ -94,7 +94,7 @@ Apache license. See LICENSE for more information.
 
 To learn more about this project:
 
-*   check out the [internet draft](https://tools.ietf.org/html/draft-rep-wg-topic),
+*   check out the [internet draft](https://tools.ietf.org/html/draft-koster-rep),
 *   how
     [Google's handling robots.txt](https://developers.google.com/search/reference/robots_txt),
 *   or for a high level overview, the
