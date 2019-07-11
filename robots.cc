@@ -88,13 +88,14 @@ class RobotsMatchStrategy {
   numpos = 1;
 
   for (auto pat = pattern.begin(); pat != pattern.end(); ++pat) {
+    if (*pat == '$' && pat + 1 == pattern.end()) {
+      return (pos[numpos-1] == pathlen);
+    }
     if (*pat == '*') {
       numpos = pathlen - pos[0] + 1;
       for (int i = 1; i < numpos; i++) {
         pos[i] = pos[i-1] + 1;
       }
-    } else if (*pat == '$' && pat + 1 == pattern.end()) {
-      return (pos[numpos-1] == pathlen);
     } else {
       // Includes '$' when not at end of pattern.
       int newnumpos = 0;
@@ -148,9 +149,9 @@ std::string GetPathParamsQuery(const std::string& url) {
       return "/" + url.substr(path_start, path_end - path_start);
     }
     return url.substr(path_start, path_end - path_start);
-  } else {
-    return "/";
   }
+
+  return "/";
 }
 
 // MaybeEscapePattern is not in anonymous namespace to allow testing.
@@ -506,17 +507,17 @@ bool RobotsMatcher::OneAgentAllowedByRobots(absl::string_view robots_txt,
 bool RobotsMatcher::disallow() const {
   if (allow_.specific.priority() > 0 || disallow_.specific.priority() > 0) {
     return (disallow_.specific.priority() > allow_.specific.priority());
-  } else if (ever_seen_specific_agent_) {
+  }
+  if (ever_seen_specific_agent_) {
     // Matching group for user-agent but either without disallow or empty one,
     // i.e. priority == 0.
     return false;
-  } else {
-    if (disallow_.global.priority() > 0 || allow_.global.priority() > 0) {
-      return disallow_.global.priority() > allow_.global.priority();
-    } else {
-      return false;
-    }
   }
+
+  if (disallow_.global.priority() > 0 || allow_.global.priority() > 0) {
+    return disallow_.global.priority() > allow_.global.priority();
+  }
+  return false;
 }
 
 bool RobotsMatcher::disallow_ignore_global() const {
@@ -530,9 +531,8 @@ const int RobotsMatcher::matching_line() const {
   if (ever_seen_specific_agent_) {
     return Match::HigherPriorityMatch(disallow_.specific, allow_.specific)
         .line();
-  } else {
-    return Match::HigherPriorityMatch(disallow_.global, allow_.global).line();
   }
+  return Match::HigherPriorityMatch(disallow_.global, allow_.global).line();
 }
 
 void RobotsMatcher::HandleRobotsStart() {
