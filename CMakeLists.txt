@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 SET(CMAKE_CXX_STANDARD 11)
 
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+#LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 SET(VERSION "0.0.0")
 
@@ -56,8 +56,22 @@ SET(ENABLE_TESTS 0 CACHE BOOL "Whether to build library tests")
 
 INCLUDE(CPack)
 INCLUDE(CheckCCompilerFlag)
+INCLUDE(ExternalProject)
 
 ############ dependencies ##############
+
+CONFIGURE_FILE(CMakeLists.txt.in libs/CMakeLists.txt)
+EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" . RESULT_VARIABLE result WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs)
+
+IF(result)
+    MESSAGE(FATAL_ERROR "Failed to download dependencies: ${result}")
+ENDIF()
+
+EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} --build . RESULT_VARIABLE result WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs)
+
+IF(result)
+    MESSAGE(FATAL_ERROR "Failed to download dependencies: ${result}")
+ENDIF()
 
 # abseil-cpp
 IF(MSVC)
@@ -70,11 +84,11 @@ IF(MSVC)
     ADD_DEFINITIONS(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /D_CRT_SECURE_NO_WARNINGS)
 ENDIF(MSVC)
 
-ADD_SUBDIRECTORY(./libs/abseil-cpp)
+ADD_SUBDIRECTORY(${CMAKE_CURRENT_BINARY_DIR}/libs/abseil-cpp-src)
 
 IF(ENABLE_TESTS)
     # googletest
-    ADD_SUBDIRECTORY(./libs/gtest EXCLUDE_FROM_ALL)
+    ADD_SUBDIRECTORY(${CMAKE_CURRENT_BINARY_DIR}/libs/gtest-src EXCLUDE_FROM_ALL)
 
     SET(INSTALL_GTEST 0)
     SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
