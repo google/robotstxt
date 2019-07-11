@@ -50,6 +50,7 @@ SET(CPACK_SOURCE_IGNORE_FILES
 ############ build flags ##############
 
 SET(ENABLE_STATIC 1 CACHE BOOL "Whether to build the static library")
+SET(ENABLE_TESTS 0 CACHE BOOL "Whether to build library tests")
 
 ############ helper libs ############
 
@@ -70,6 +71,18 @@ IF(MSVC)
 ENDIF(MSVC)
 
 ADD_SUBDIRECTORY(./libs/abseil-cpp)
+
+IF(ENABLE_TESTS)
+    # googletest
+    ADD_SUBDIRECTORY(./libs/gtest EXCLUDE_FROM_ALL)
+
+    SET(INSTALL_GTEST 0)
+    SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+    IF(CMAKE_VERSION VERSION_LESS 2.8.11)
+        INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include)
+    ENDIF()
+ENDIF(ENABLE_TESTS)
 
 ########### compiler flags ##############
 
@@ -125,4 +138,14 @@ INSTALL(TARGETS ${LIBROBOTS_LIBS}
 INSTALL(FILES ${CMAKE_SOURCE_DIR}/robots.h DESTINATION include)
 
 INSTALL(TARGETS robots-main DESTINATION bin)
+
+############ tests ##############
+
+IF(ENABLE_TESTS)
+    ENABLE_TESTING()
+
+    ADD_EXECUTABLE(robots-test ./robots_test.cc)
+    TARGET_LINK_LIBRARIES(robots-test ${LIBROBOTS_LIBS} gtest_main)
+    ADD_TEST(NAME robots-test COMMAND robots-test)
+ENDIF(ENABLE_TESTS)
 
