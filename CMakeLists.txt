@@ -1,5 +1,5 @@
 PROJECT(robots)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 SET(CMAKE_CXX_STANDARD 11)
 
@@ -47,6 +47,12 @@ SET(CPACK_SOURCE_IGNORE_FILES
     "/autom4te.cache/"
 )
 
+############ build flags ##############
+
+SET(ENABLE_STATIC 1 CACHE BOOL "Whether to build the static library")
+
+############ helper libs ############
+
 INCLUDE(CPack)
 INCLUDE(CheckCCompilerFlag)
 
@@ -61,7 +67,7 @@ IF(MSVC)
     # /wd4800  force value to bool 'true' or 'false' (performance warning)
     ADD_COMPILE_OPTIONS(/wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
     ADD_DEFINITIONS(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /D_CRT_SECURE_NO_WARNINGS)
-ENDIF()
+ENDIF(MSVC)
 
 ADD_SUBDIRECTORY(./libs/abseil-cpp)
 
@@ -71,24 +77,52 @@ SET(COMPILER_FLAGS_TO_CHECK
     "-Wall" "-Werror=implicit-function-declaration"
 )
 
-IF (CPU_ARCH)
+IF(CPU_ARCH)
     LIST(APPEND COMPILER_FLAGS_TO_CHECK "-march=${CPU_ARCH}")
 ENDIF(CPU_ARCH)
 
-########### install files ###############
+########### project files ###############
 
 INCLUDE_DIRECTORIES(.)
 
 ######### targets ###########
 
-SET(robots_SRCS
-    ./robots_main.cc
-    ./robots.cc
+SET(LIBROBOTS_LIBS)
+
+SET(robots_SRCS ./robots.cc)
+SET(robots_LIBS absl::base absl::container absl::strings)
+
+ADD_LIBRARY(robots SHARED ${robots_SRCS})
+TARGET_LINK_LIBRARIES(robots ${robots_LIBS}) 
+LIST(APPEND LIBROBOTS_LIBS "robots")
+
+IF(ENABLE_STATIC)
+    ADD_LIBRARY(robots-static STATIC ${robots_SRCS})
+    TARGET_LINK_LIBRARIES(robots-static ${robots_LIBS})
+
+    LIST(APPEND LIBROBOTS_LIBS "robots-static")
+
+    SET_TARGET_PROPERTIES(robots-static PROPERTIES OUTPUT_NAME "robots")
+    
+    SET_TARGET_PROPERTIES(${LIBROBOTS_LIBS} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+ENDIF(ENABLE_STATIC)
+
+IF(WIN_32)
+    SET_TARGET_PROPERTIES(robots PROPERTIES DEFINE_SYMBOL DLL_EXPORT)
+ENDIF(WIN_32)
+
+ADD_EXECUTABLE(robots-main ./robots_main.cc)
+TARGET_LINK_LIBRARIES(robots-main ${LIBROBOTS_LIBS})
+SET_TARGET_PROPERTIES(robots-main PROPERTIES OUTPUT_NAME "robots")
+
+############ installation ############
+
+INSTALL(TARGETS ${LIBROBOTS_LIBS} 
+    LIBRARY DESTINATION lib 
+    ARCHIVE DESTINATION lib
 )
 
-ADD_EXECUTABLE(robots ${robots_SRCS})
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/robots.h DESTINATION include)
 
-TARGET_LINK_LIBRARIES(robots absl::base absl::container absl::strings)
-
-INSTALL(TARGETS robots DESTINATION bin)
+INSTALL(TARGETS robots-main DESTINATION bin)
 
