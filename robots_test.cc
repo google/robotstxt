@@ -168,7 +168,7 @@ TEST(RobotsUnittest, ID_VerifyValidUserAgentsToObey) {
   EXPECT_FALSE(RobotsMatcher::IsValidUserAgentToObey("Foobot Bar"));
 }
 
-// User-agent line values are case-insensitive. See REP I-D section "The
+// User-agent line values are case insensitive. See REP I-D section "The
 // user-agent line".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.2.1
 TEST(RobotsUnittest, ID_UserAgentValueCaseInsensitive) {
