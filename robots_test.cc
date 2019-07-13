@@ -123,7 +123,7 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BazBot", url_foo));
 }
 
-// REP lines are case-insensitive. See REP I-D section "Protocol Definition".
+// REP lines are case insensitive. See REP I-D section "Protocol Definition".
 // https://tools.ietf.org/html/draft-rep-wg-topic#section-2.1
 TEST(RobotsUnittest, ID_REPLineNamesCaseInsensitive) {
   const absl::string_view robotstxt_upper =
