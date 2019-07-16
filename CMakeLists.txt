@@ -45,10 +45,11 @@ SET(CPACK_SOURCE_IGNORE_FILES
     "/autom4te.cache/"
 )
 
-############ build flags ##############
+############ build options ##############
 
-SET(ENABLE_STATIC 1 CACHE BOOL "Whether to build the static library")
-SET(ENABLE_TESTS 0 CACHE BOOL "Whether to build library tests")
+OPTION(ROBOTS_BUILD_STATIC "If ON, robots will build also the static library" ON)
+OPTION(ROBOTS_BUILD_TESTS "If ON, robots will build test targets" OFF)
+OPTION(ROBOTS_INSTALL "If ON, enable the installation of the targets" ON)
 
 ############ helper libs ############
 
@@ -82,11 +83,17 @@ IF(MSVC)
     ADD_DEFINITIONS(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /D_CRT_SECURE_NO_WARNINGS)
 ENDIF(MSVC)
 
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_BINARY_DIR}/libs/abseil-cpp-src)
+ADD_SUBDIRECTORY(${CMAKE_CURRENT_BINARY_DIR}/libs/abseil-cpp-src 
+                 ${CMAKE_CURRENT_BINARY_DIR}/libs/abseil-cpp-build 
+                 EXCLUDE_FROM_ALL)
 
-IF(ENABLE_TESTS)
+IF(ROBOTS_BUILD_TESTS)
+    INCLUDE(CTest)
+
     # googletest
-    ADD_SUBDIRECTORY(${CMAKE_CURRENT_BINARY_DIR}/libs/gtest-src EXCLUDE_FROM_ALL)
+    ADD_SUBDIRECTORY(${CMAKE_CURRENT_BINARY_DIR}/libs/gtest-src 
+                     ${CMAKE_CURRENT_BINARY_DIR}/libs/gtest-build
+                     EXCLUDE_FROM_ALL)
 
     SET(INSTALL_GTEST 0)
     SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -94,9 +101,11 @@ IF(ENABLE_TESTS)
     IF(CMAKE_VERSION VERSION_LESS 2.8.11)
         INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include)
     ENDIF()
-ENDIF(ENABLE_TESTS)
+ENDIF(ROBOTS_BUILD_TESTS)
 
 ########### compiler flags ##############
+
+SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 SET(COMPILER_FLAGS_TO_CHECK
     "-Wall" "-Werror=implicit-function-declaration"
@@ -121,7 +130,7 @@ ADD_LIBRARY(robots SHARED ${robots_SRCS})
 TARGET_LINK_LIBRARIES(robots ${robots_LIBS}) 
 LIST(APPEND LIBROBOTS_LIBS "robots")
 
-IF(ENABLE_STATIC)
+IF(ROBOTS_BUILD_STATIC)
     ADD_LIBRARY(robots-static STATIC ${robots_SRCS})
     TARGET_LINK_LIBRARIES(robots-static ${robots_LIBS})
 
@@ -130,7 +139,7 @@ IF(ENABLE_STATIC)
     SET_TARGET_PROPERTIES(robots-static PROPERTIES OUTPUT_NAME "robots")
     
     SET_TARGET_PROPERTIES(${LIBROBOTS_LIBS} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-ENDIF(ENABLE_STATIC)
+ENDIF(ROBOTS_BUILD_STATIC)
 
 IF(WIN_32)
     SET_TARGET_PROPERTIES(robots PROPERTIES DEFINE_SYMBOL DLL_EXPORT)
@@ -142,22 +151,24 @@ SET_TARGET_PROPERTIES(robots-main PROPERTIES OUTPUT_NAME "robots")
 
 ############ installation ############
 
-INSTALL(TARGETS ${LIBROBOTS_LIBS} 
-    LIBRARY DESTINATION lib 
-    ARCHIVE DESTINATION lib
-)
+IF(ROBOTS_INSTALL)
+    INSTALL(TARGETS ${LIBROBOTS_LIBS} 
+        LIBRARY DESTINATION lib 
+        ARCHIVE DESTINATION lib
+    )
 
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/robots.h DESTINATION include)
+    INSTALL(FILES ${CMAKE_SOURCE_DIR}/robots.h DESTINATION include)
 
-INSTALL(TARGETS robots-main DESTINATION bin)
+    INSTALL(TARGETS robots-main DESTINATION bin)
+ENDIF(ROBOTS_INSTALL)
 
 ############ tests ##############
 
-IF(ENABLE_TESTS)
+IF(ROBOTS_BUILD_TESTS)
     ENABLE_TESTING()
 
     ADD_EXECUTABLE(robots-test ./robots_test.cc)
     TARGET_LINK_LIBRARIES(robots-test ${LIBROBOTS_LIBS} gtest_main)
     ADD_TEST(NAME robots-test COMMAND robots-test)
-ENDIF(ENABLE_TESTS)
+ENDIF(ROBOTS_BUILD_TESTS)
 
