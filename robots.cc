@@ -99,9 +99,8 @@ class RobotsMatchStrategy {
     } else {
       // Includes '$' when not at end of pattern.
       int newnumpos = 0;
-      const size_t len = path.length();
       for (int i = 0; i < numpos; i++) {
-        if (pos[i] < len && path[pos[i]] == *pat) {
+        if (pos[i] < pathlen && path[pos[i]] == *pat) {
           pos[newnumpos++] = pos[i] + 1;
         }
       }
