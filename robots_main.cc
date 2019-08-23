@@ -53,17 +53,19 @@ bool LoadFile(const std::string& filename, std::string* result) {
 }
 
 void ShowHelp(int argc, char** argv) {
-    std::cerr << "Shows whether the given user_agent and URI combination"
-              << " is allowed or disallowed by the given robots.txt file. "
-              << std::endl << std::endl;
-    std::cerr << "Usage: " << std::endl << "  " << argv[0]
-              << " <robots.txt filename> <user_agent> <URI>"
-              << std::endl << std::endl;
-    std::cerr << "The URI must be %-encoded according to RFC3986."
-              << std::endl << std::endl;
-    std::cerr << "Example: " << std::endl
-              << "  " << argv[0] << " robots.txt FooBot http://example.com/foo"
-              << std::endl;
+  std::cerr << "Shows whether the given user_agent and URI combination"
+            << " is allowed or disallowed by the given robots.txt file. "
+            << std::endl
+            << std::endl;
+  std::cerr << "Usage: " << std::endl
+            << "  " << argv[0] << " <robots.txt filename> <user_agent> <URI>"
+            << std::endl
+            << std::endl;
+  std::cerr << "The URI must be %-encoded according to RFC3986." << std::endl
+            << std::endl;
+  std::cerr << "Example: " << std::endl
+            << "  " << argv[0] << " robots.txt FooBot http://example.com/foo"
+            << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -73,8 +75,8 @@ int main(int argc, char** argv) {
     return 0;
   }
   if (argc != 4) {
-    std::cerr << "Invalid amount of arguments. Showing help."
-              << std::endl << std::endl;
+    std::cerr << "Invalid amount of arguments. Showing help." << std::endl
+              << std::endl;
     ShowHelp(argc, argv);
     return 1;
   }
