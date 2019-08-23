@@ -919,7 +919,7 @@ TEST(RobotsUnittest, ID_NonStandardLineExample_Sitemap) {
     googlebot::ParseRobotsTxt(robotstxt, &report);
     EXPECT_EQ(sitemap_loc, report.sitemap());
   }
-  // A sitemap line may appear anyhere in the file.
+  // A sitemap line may appear anywhere in the file.
   {
     std::string robotstxt;
     std::string sitemap_loc = "http://foo.bar/sitemap.xml";
