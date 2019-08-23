@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test", "cc_binary")
+
 licenses(["notice"])
 
 exports_files(["LICENSE"])
