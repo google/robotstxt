@@ -385,7 +385,7 @@ void RobotsTxtParser::Parse() {
   // Certain browsers limit the URL length to 2083 bytes. In a robots.txt, it's
   // fairly safe to assume any valid line isn't going to be more than many times
   // that max url length of 2KB. We want some padding for
-  // URF-8 encoding/nulls/etc. but a much smaller bound would be okay as well.
+  // UTF-8 encoding/nulls/etc. but a much smaller bound would be okay as well.
   // If so, we can ignore the chars on a line past that.
   const int kMaxLineLen = 2083 * 8;
   // Allocate a buffer used to process the current line.
