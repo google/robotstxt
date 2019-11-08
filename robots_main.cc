@@ -34,6 +34,7 @@
 //
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "robots.h"
 
@@ -86,13 +87,18 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  std::string user_agent = argv[2];
-  std::vector<std::string> user_agents(1, user_agent);
+  std::string input_useragents = argv[2];
+  std::vector<std::string> useragents;
+  std::string ua;
+  std::istringstream ss(input_useragents);
+  while(std::getline(ss, ua, ',')) {
+      useragents.push_back(ua);
+  }
   googlebot::RobotsMatcher matcher;
   std::string url = argv[3];
-  bool allowed = matcher.AllowedByRobots(robots_content, &user_agents, url);
+  bool allowed = matcher.AllowedByRobots(robots_content, &useragents, url);
 
-  std::cout << "user-agent '" << user_agent << "' with URI '" << argv[3]
+  std::cout << "user-agent '" << input_useragents << "' with URI '" << argv[3]
             << "': " << (allowed ? "ALLOWED" : "DISALLOWED") << std::endl;
   if (robots_content.empty()) {
     std::cout << "notice: robots file is empty so all user-agents are allowed"
