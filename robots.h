@@ -112,7 +112,9 @@ class RobotsMatcher : protected RobotsParseHandler {
   static bool IsValidUserAgentToObey(absl::string_view user_agent);
 
   // Returns true iff 'url' is allowed to be fetched by any member of the
-  // "user_agents" vector. 'url' must be %-encoded according to RFC3986.
+  // "user_agents" vector after collapsing all rules applying to any member of 
+  // the "user_agents" vector into a single ruleset. 'url' must be %-encoded 
+  // according to RFC3986.
   bool AllowedByRobots(absl::string_view robots_body,
                        const std::vector<std::string>* user_agents,
                        const std::string& url);
