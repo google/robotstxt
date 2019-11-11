@@ -16,21 +16,24 @@
 // File: robots_main.cc
 // -----------------------------------------------------------------------------
 //
-// Simple binary to assess whether a URL is accessible to a user-agent according
-// to records found in a local robots.txt file, based on Google's robots.txt
-// parsing and matching algorithms.
+// Simple binary to assess whether a URL is accessible to a set of user-agents 
+// according to records found in a local robots.txt file, based on Google's 
+// robots.txt parsing and matching algorithms.
 // Usage:
 //     robots_main <local_path_to_robotstxt> <user_agent> <url>
 // Arguments:
 // local_path_to_robotstxt: local path to a file containing robots.txt records.
 //   For example: /home/users/username/robots.txt
-// user_agent: a token to be matched against records in the robots.txt.
-//   For example: Googlebot
+// user_agent: a token to be matched against records in the robots.txt (or a
+// comma-separated list of user agents)
+//   For example: Googlebot or Googlebot,Googlebot-image
 // url: a url to be matched against records in the robots.txt. The URL must be
 // %-encoded according to RFC3986.
 //   For example: https://example.com/accessible/url.html
 // Returns: Prints a sentence with verdict about whether 'user_agent' is allowed
-// to access 'url' based on records in 'local_path_to_robotstxt'.
+// to access 'url' based on records in 'local_path_to_robotstxt'. When multiple 
+// user agents are provided, check them as a vector based on functionality in 
+// "AllowedByRobots" method.
 //
 #include <fstream>
 #include <iostream>
