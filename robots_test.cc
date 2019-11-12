@@ -18,6 +18,7 @@
 #include "robots.h"
 
 #include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
 #include "absl/strings/str_cat.h"
@@ -31,6 +32,12 @@ bool IsUserAgentAllowed(const absl::string_view robotstxt,
                         const std::string& useragent, const std::string& url) {
   RobotsMatcher matcher;
   return matcher.OneAgentAllowedByRobots(robotstxt, useragent, url);
+}
+
+bool AllowedByRobotsTuple(const absl::string_view robotstxt,
+                        const std::vector<std::string>* useragent, const std::string& url) {
+  RobotsMatcher matcher;
+  return matcher.AllowedByRobotsTuple(robotstxt, useragent, url);
 }
 
 // Google-specific: system test.
@@ -121,6 +128,45 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "FooBot", url_foo));
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BarBot", url_foo));
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BazBot", url_foo));
+}
+
+// Test based on the documentation at
+// https://developers.google.com/search/reference/robots_txt#order-of-precedence-for-user-agents
+// "Only one group is valid for a particular crawler"
+// "The group followed is group 1. Only the most specific group is followed, all others are ignored"
+TEST(RobotsUnittest, ID_Multiple_Useragents) {
+  const absl::string_view robotstxt =
+      "user-agent: googlebot-news\n"
+      "Disallow: /bar/\n"
+      "\n"
+      "user-agent: *\n"
+      "Disallow: /baz/\n"
+      "\n\n"
+      "user-agent: googlebot\n"
+      "Disallow: /foo/\n";
+
+  const std::string url_foo = "http://foo.bar/foo/";
+  const std::string url_bar = "http://foo.bar/bar/";
+  const std::string url_baz = "http://foo.bar/baz/";
+  const std::string url_qux = "http://foo.bar/qux/";
+
+  std::vector<std::string> ua_tuple;
+  ua_tuple.push_back("googlebot-news");
+  ua_tuple.push_back("googlebot");
+
+  EXPECT_TRUE(AllowedByRobotsTuple(robotstxt, &ua_tuple, url_foo));
+  EXPECT_FALSE(AllowedByRobotsTuple(robotstxt, &ua_tuple, url_bar));
+  EXPECT_TRUE(AllowedByRobotsTuple(robotstxt, &ua_tuple, url_baz));
+  EXPECT_TRUE(AllowedByRobotsTuple(robotstxt, &ua_tuple, url_qux));
+
+  std::vector<std::string> ua_tuple_no_specific;
+  ua_tuple_no_specific.push_back("googlebot-image");
+  ua_tuple_no_specific.push_back("googlebot");
+
+  EXPECT_FALSE(AllowedByRobotsTuple(robotstxt, &ua_tuple_no_specific, url_foo));
+  EXPECT_TRUE(AllowedByRobotsTuple(robotstxt, &ua_tuple_no_specific, url_bar));
+  EXPECT_TRUE(AllowedByRobotsTuple(robotstxt, &ua_tuple_no_specific, url_baz));
+  EXPECT_TRUE(AllowedByRobotsTuple(robotstxt, &ua_tuple_no_specific, url_qux));
 }
 
 // REP lines are case insensitive. See REP I-D section "Protocol Definition".

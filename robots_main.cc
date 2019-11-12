@@ -99,27 +99,15 @@ int main(int argc, char** argv) {
   googlebot::RobotsMatcher matcher;
   std::string url = argv[3];
 
-  // if we have multiple user agents, the first is the most specific
-  std::vector<std::string> first_ua(1, useragents[0]);
+  bool allowed;
 
-  bool allowed = matcher.AllowedByRobots(robots_content, &first_ua, url);
-  bool with_specific = matcher.ever_seen_specific_agent();
+  if (useragents.size() == 2){
+    // if we have multiple user agents, the first is the most specific
+    std::vector<std::string> ua_tuple = {useragents[0], useragents[1]};
 
-  // if we are given multiple user agents, only obey the specific one if there 
-  // are specific rules targeting it
-  if (useragents.size() > 1) {
-    std::cout << "1. user-agent '" << first_ua[0] << "': " 
-              << (allowed ? "ALLOWED " : "DISALLOWED ") 
-              << (with_specific ? "with specific rule" : "without specific rule") 
-              << std::endl;
-
-    if (!with_specific) {
-      std::vector<std::string> second_ua(1, useragents[1]);
-      allowed = matcher.AllowedByRobots(robots_content, &second_ua, url);
-
-      std::cout << "2. user-agent '" << second_ua[0] << "': " 
-                << (allowed ? "ALLOWED" : "DISALLOWED") << std::endl;
-    }
+    allowed = matcher.AllowedByRobotsTuple(robots_content, &ua_tuple, url);
+  } else {
+    allowed = matcher.AllowedByRobots(robots_content, &useragents, url);
   }
 
   std::cout << "user-agent '" << input_useragents << "' with URI '" << argv[3]

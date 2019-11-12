@@ -495,6 +495,24 @@ bool RobotsMatcher::AllowedByRobots(absl::string_view robots_body,
   return !disallow();
 }
 
+bool RobotsMatcher::AllowedByRobotsTuple(absl::string_view robots_body,
+                                    const std::vector<std::string>* user_agents,
+                                    const std::string& url) {
+  std::vector<std::string> first_ua;
+  first_ua.push_back(user_agents->at(0));
+
+  bool allowed = AllowedByRobots(robots_body, &first_ua, url);
+  bool with_specific = ever_seen_specific_agent();
+
+  if (!with_specific) {
+    std::vector<std::string> second_ua;
+    second_ua.push_back(user_agents->at(1));
+    allowed = AllowedByRobots(robots_body, &second_ua, url);
+  }
+
+  return allowed;
+}
+
 bool RobotsMatcher::OneAgentAllowedByRobots(absl::string_view robots_txt,
                                             const std::string& user_agent,
                                             const std::string& url) {
