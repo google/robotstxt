@@ -34,6 +34,7 @@
 //
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "robots.h"
 
@@ -86,13 +87,42 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  std::string user_agent = argv[2];
-  std::vector<std::string> user_agents(1, user_agent);
+  std::string input_useragents = argv[2];
+  std::vector<std::string> useragents;
+  std::string ua;
+  std::istringstream ss(input_useragents);
+  
+  // if we are given a comma-separated list of user agents, explode into a vector
+  while(std::getline(ss, ua, ',')) {
+      useragents.push_back(ua);
+  }
   googlebot::RobotsMatcher matcher;
   std::string url = argv[3];
-  bool allowed = matcher.AllowedByRobots(robots_content, &user_agents, url);
 
-  std::cout << "user-agent '" << user_agent << "' with URI '" << argv[3]
+  // if we have multiple user agents, the first is the most specific
+  std::vector<std::string> first_ua(1, useragents[0]);
+
+  bool allowed = matcher.AllowedByRobots(robots_content, &first_ua, url);
+  bool with_specific = matcher.ever_seen_specific_agent();
+
+  // if we are given multiple user agents, only obey the specific one if there 
+  // are specific rules targeting it
+  if (useragents.size() > 1) {
+    std::cout << "1. user-agent '" << first_ua[0] << "': " 
+              << (allowed ? "ALLOWED " : "DISALLOWED ") 
+              << (with_specific ? "with specific rule" : "without specific rule") 
+              << std::endl;
+
+    if (!with_specific) {
+      std::vector<std::string> second_ua(1, useragents[1]);
+      allowed = matcher.AllowedByRobots(robots_content, &second_ua, url);
+
+      std::cout << "2. user-agent '" << second_ua[0] << "': " 
+                << (allowed ? "ALLOWED" : "DISALLOWED") << std::endl;
+    }
+  }
+
+  std::cout << "user-agent '" << input_useragents << "' with URI '" << argv[3]
             << "': " << (allowed ? "ALLOWED" : "DISALLOWED") << std::endl;
   if (robots_content.empty()) {
     std::cout << "notice: robots file is empty so all user-agents are allowed"
