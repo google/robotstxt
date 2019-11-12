@@ -19,7 +19,7 @@
 // Simple binary to assess whether a URL is accessible to a user-agent according
 // to records found in a local robots.txt file, based on Google's robots.txt
 // parsing and matching algorithms.
-// Usage:
+// Usage (single user-agent):
 //     robots_main <local_path_to_robotstxt> <user_agent> <url>
 // Arguments:
 // local_path_to_robotstxt: local path to a file containing robots.txt records.
@@ -31,6 +31,22 @@
 //   For example: https://example.com/accessible/url.html
 // Returns: Prints a sentence with verdict about whether 'user_agent' is allowed
 // to access 'url' based on records in 'local_path_to_robotstxt'.
+//
+// Usage (pair of user-agents):
+//     robots_main <local_path_to_robotstxt> <comma_separated_user_agent_pair> <url>
+// Arguments:
+// local_path_to_robotstxt: local path to a file containing robots.txt records.
+//   For example: /home/users/username/robots.txt
+// comma_separated_user_agent_pair: pair of user-agents (most specific first)
+//   For example: googlebot-image,googlebot
+// url: a url to be matched against records in the robots.txt. The URL must be
+// %-encoded according to RFC3986.
+//   For example: https://example.com/accessible/url.html
+// Returns: Prints a sentence with verdict about whether the first user-agent
+// is allowed or disallowed to access 'url' based on *specific* records 
+// targeting that user-agent in 'local_path_to_robotstxt'. If there are no 
+// specific rules targeting that user-agent, it falls back to the second
+// user-agent.
 //
 #include <fstream>
 #include <iostream>
