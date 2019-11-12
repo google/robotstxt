@@ -21,7 +21,7 @@
 // with Google-specific optimizations detailed at
 //   https://developers.google.com/search/reference/robots_txt
 
-#include "robots.h"
+#include "./robots.h"
 
 #include <stdlib.h>
 
