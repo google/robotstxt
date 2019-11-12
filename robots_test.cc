@@ -15,7 +15,7 @@
 // This file tests the robots.txt parsing and matching code found in robots.cc
 // against the current Robots Exclusion Protocol (REP) internet draft (I-D).
 // https://tools.ietf.org/html/draft-koster-rep
-#include "robots.h"
+#include "./robots.h"
 
 #include <string>
 #include <vector>
@@ -35,7 +35,8 @@ bool IsUserAgentAllowed(const absl::string_view robotstxt,
 }
 
 bool AllowedByRobotsTuple(const absl::string_view robotstxt,
-                        const std::vector<std::string>* useragent, const std::string& url) {
+                          const std::vector<std::string>* useragent,
+                          const std::string& url) {
   RobotsMatcher matcher;
   return matcher.AllowedByRobotsTuple(robotstxt, useragent, url);
 }
@@ -133,7 +134,8 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
 // Test based on the documentation at
 // https://developers.google.com/search/reference/robots_txt#order-of-precedence-for-user-agents
 // "Only one group is valid for a particular crawler"
-// "The group followed is group 1. Only the most specific group is followed, all others are ignored"
+// "The group followed is group 1. Only the most specific group is followed,
+// all others are ignored"
 TEST(RobotsUnittest, ID_Multiple_Useragents) {
   const absl::string_view robotstxt =
       "user-agent: googlebot-news\n"

@@ -33,18 +33,18 @@
 // to access 'url' based on records in 'local_path_to_robotstxt'.
 //
 // Usage (pair of user-agents):
-//     robots_main <local_path_to_robotstxt> <comma_separated_user_agent_pair> <url>
+//     robots_main <local_path_to_robotstxt> <comma_sep_user_agent_pair> <url>
 // Arguments:
 // local_path_to_robotstxt: local path to a file containing robots.txt records.
 //   For example: /home/users/username/robots.txt
-// comma_separated_user_agent_pair: pair of user-agents (most specific first)
+// comma_sep_user_agent_pair: pair of user-agents (most specific first)
 //   For example: googlebot-image,googlebot
 // url: a url to be matched against records in the robots.txt. The URL must be
 // %-encoded according to RFC3986.
 //   For example: https://example.com/accessible/url.html
 // Returns: Prints a sentence with verdict about whether the first user-agent
-// is allowed or disallowed to access 'url' based on *specific* records 
-// targeting that user-agent in 'local_path_to_robotstxt'. If there are no 
+// is allowed or disallowed to access 'url' based on *specific* records
+// targeting that user-agent in 'local_path_to_robotstxt'. If there are no
 // specific rules targeting that user-agent, it falls back to the second
 // user-agent.
 //
@@ -52,7 +52,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "robots.h"
+#include "./robots.h"
 
 bool LoadFile(const std::string& filename, std::string* result) {
   std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
@@ -107,9 +107,10 @@ int main(int argc, char** argv) {
   std::vector<std::string> useragents;
   std::string ua;
   std::istringstream ss(input_useragents);
-  
-  // if we are given a comma-separated list of user agents, explode into a vector
-  while(std::getline(ss, ua, ',')) {
+
+  // if we are given a comma-separated list of user agents, explode into a
+  // vector
+  while (std::getline(ss, ua, ',')) {
       useragents.push_back(ua);
   }
   googlebot::RobotsMatcher matcher;
@@ -117,7 +118,7 @@ int main(int argc, char** argv) {
 
   bool allowed;
 
-  if (useragents.size() == 2){
+  if (useragents.size() == 2) {
     // if we have multiple user agents, the first is the most specific
     std::vector<std::string> ua_tuple = {useragents[0], useragents[1]};
 
