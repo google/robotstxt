@@ -15,7 +15,7 @@
 // This file tests the robots.txt parsing and matching code found in robots.cc
 // against the current Robots Exclusion Protocol (REP) internet draft (I-D).
 // https://tools.ietf.org/html/draft-koster-rep
-#include "robots.h"
+#include "./robots.h"
 
 #include <string>
 
@@ -31,6 +31,19 @@ bool IsUserAgentAllowed(const absl::string_view robotstxt,
                         const std::string& useragent, const std::string& url) {
   RobotsMatcher matcher;
   return matcher.OneAgentAllowedByRobots(robotstxt, useragent, url);
+}
+
+bool AllowedByRobots(const absl::string_view robotstxt,
+                     const std::string& input_useragents,
+                     const std::string& url) {
+  std::vector<std::string> useragents;
+  std::string ua;
+  std::istringstream ss(input_useragents);
+  while (std::getline(ss, ua, ',')) {
+      useragents.push_back(ua);
+  }
+  RobotsMatcher matcher;
+  return matcher.AllowedByRobots(robotstxt, &useragents, url);
 }
 
 // Google-specific: system test.
@@ -121,6 +134,34 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "FooBot", url_foo));
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BarBot", url_foo));
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BazBot", url_foo));
+}
+
+// Test based on the documentation at
+// https://developers.google.com/search/reference/robots_txt#order-of-precedence-for-user-agents
+// "Only one group is valid for a particular crawler"
+// "The group followed is group 1. Only the most specific group is followed,
+// all others are ignored"
+TEST(RobotsUnittest, ID_Multiple_Useragents) {
+  const absl::string_view robotstxt =
+      "user-agent: googlebot-news\n"
+      "Disallow: /bar/\n"
+      "\n"
+      "user-agent: *\n"
+      "Disallow: /baz/\n"
+      "\n\n"
+      "user-agent: googlebot\n"
+      "Disallow: /foo/\n";
+
+  const std::string url_foo = "http://foo.bar/foo/";
+  const std::string url_bar = "http://foo.bar/bar/";
+  const std::string url_baz = "http://foo.bar/baz/";
+  const std::string url_qux = "http://foo.bar/qux/";
+
+  // the first test currently fails
+  EXPECT_TRUE(AllowedByRobots(robotstxt, "googlebot,googlebot-news", url_foo));
+  EXPECT_FALSE(AllowedByRobots(robotstxt, "googlebot,googlebot-news", url_bar));
+  EXPECT_TRUE(AllowedByRobots(robotstxt, "googlebot,googlebot-news", url_baz));
+  EXPECT_TRUE(AllowedByRobots(robotstxt, "googlebot,googlebot-news", url_qux));
 }
 
 // REP lines are case insensitive. See REP I-D section "Protocol Definition".
