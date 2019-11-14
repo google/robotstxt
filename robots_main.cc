@@ -54,54 +54,9 @@
 
 #include "./robots.h"
 
-bool LoadFile(const std::string& filename, std::string* result) {
-  std::ifstream file(filename, std::ios::in | std::ios::binary | std::ios::ate);
-  if (file.is_open()) {
-    size_t size = file.tellg();
-    std::vector<char> buffer(size);
-    file.seekg(0, std::ios::beg);
-    file.read(buffer.data(), size);
-    file.close();
-    if (!file) return false;  // file reading error (failbit or badbit).
-    result->assign(buffer.begin(), buffer.end());
-    return true;
-  }
-  return false;
-}
-
-void ShowHelp(int argc, char** argv) {
-  std::cerr << "Shows whether the given user_agent and URI combination"
-            << " is allowed or disallowed by the given robots.txt file. "
-            << std::endl
-            << std::endl;
-  std::cerr << "Usage: " << std::endl
-            << "  " << argv[0] << " <robots.txt filename> <user_agent> <URI>"
-            << std::endl
-            << std::endl;
-  std::cerr << "The URI must be %-encoded according to RFC3986." << std::endl
-            << std::endl;
-  std::cerr << "Example: " << std::endl
-            << "  " << argv[0] << " robots.txt FooBot http://example.com/foo"
-            << std::endl;
-}
-
 int main(int argc, char** argv) {
-  std::string filename = argc >= 2 ? argv[1] : "";
-  if (filename == "-h" || filename == "-help" || filename == "--help") {
-    ShowHelp(argc, argv);
-    return 0;
-  }
-  if (argc != 4) {
-    std::cerr << "Invalid amount of arguments. Showing help." << std::endl
-              << std::endl;
-    ShowHelp(argc, argv);
-    return 1;
-  }
-  std::string robots_content;
-  if (!(LoadFile(filename, &robots_content))) {
-    std::cerr << "failed to read file \"" << filename << "\"" << std::endl;
-    return 1;
-  }
+
+  std::string robots_content = argv[1];
 
   std::string input_useragents = argv[2];
   std::vector<std::string> useragents;
@@ -127,10 +82,5 @@ int main(int argc, char** argv) {
     allowed = matcher.AllowedByRobots(robots_content, &useragents, url);
   }
 
-  std::cout << "user-agent '" << input_useragents << "' with URI '" << argv[3]
-            << "': " << (allowed ? "ALLOWED" : "DISALLOWED") << std::endl;
-  if (robots_content.empty()) {
-    std::cout << "notice: robots file is empty so all user-agents are allowed"
-              << std::endl;
-  }
+  return allowed;
 }
