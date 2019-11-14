@@ -23,7 +23,8 @@ The library is released open-source to help developers build tools that better
 reflect Google's robots.txt parsing and matching.
 
 For webmasters, we included a small binary in the project that allows testing a
-single URL and user-agent against a robots.txt.
+single URL and user-agent against a robots.txt, or a pair of user-agents in a 
+hierarchy much as `googlebot-image` and other sub-Googlebots work.
 
 ## Building the library
 
@@ -73,6 +74,20 @@ Target //:robots_main up-to-date:
 bazel-robots$ bazel run robots_main -- ~/local/path/to/robots.txt YourBot https://example.com/url
   user-agent 'YourBot' with url 'https://example.com/url' allowed: YES
 ```
+
+##### Usage
+
+Basic usage (testing a URL with a single user-agent) takes an argument of the 
+user-agent:
+
+`bazel-robots$ bazel run robots_main -- ~/local/path/to/robots.txt YourBot https://example.com/url`
+
+To test against a sub-Googlebot such as `googlebot-image` which obeys **specific** 
+rulesets targeting that user-agent, or falls back to a second (`googlebot`)
+user-agent if there are no **specific** rulesets targeting the main 
+user-agent, pass a comma-separated pair with the specific user-agent first:
+
+`bazel-robots$ bazel run robots_main -- ~/local/path/to/robots.txt googlebot-image,googlebot https://example.com/url`
 
 #### Building with CMake
 

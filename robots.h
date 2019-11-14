@@ -117,6 +117,15 @@ class RobotsMatcher : protected RobotsParseHandler {
                        const std::vector<std::string>* user_agents,
                        const std::string& url);
 
+  // Returns true iff 'url' is allowed to be fetched by the first member
+  // of the "user_agents" vector according to a specific ruleset, or if there
+  // is no specific ruleset for that user agent, iff 'url' is allowed to be
+  // fetched by the second member under any ruleset. 'url' must be %-encoded
+  // according to RFC3986.
+  bool AllowedByRobotsTuple(absl::string_view robots_body,
+                       const std::vector<std::string>* user_agents,
+                       const std::string& url);
+
   // Do robots check for 'url' when there is only one user agent. 'url' must
   // be %-encoded according to RFC3986.
   bool OneAgentAllowedByRobots(absl::string_view robots_txt,
