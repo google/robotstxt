@@ -82,5 +82,8 @@ int main(int argc, char** argv) {
     allowed = matcher.AllowedByRobots(robots_content, &useragents, url);
   }
 
-  return allowed;
+  std::cout << "{\"allowed\": " << (allowed ? "true" : "false")
+            << ", \"line\": " << matcher.matching_line() << "}" << std::endl;
+
+  return 1;
 }
