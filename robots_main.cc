@@ -131,7 +131,10 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "{\"allowed\": " << (allowed ? "true" : "false")
-            << ", \"line\": " << matcher.matching_line() << "}" << std::endl;
+            << ", \"line\": " << matcher.matching_line() 
+            << ", \"allowed_ignore_global\": " // expose as "allowed" - reverse bool
+            << (matcher.disallow_ignore_global() ? "false" : "true")
+            << "}" << std::endl;
 
   return 1;
 }
