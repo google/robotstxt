@@ -44,8 +44,8 @@ namespace googlebot {
 // ParseRobotsTxt() in the sequence they have been found in the file.
 class RobotsParseHandler {
  public:
-  RobotsParseHandler() {}
-  virtual ~RobotsParseHandler() {}
+  RobotsParseHandler() = default;
+  virtual ~RobotsParseHandler() = default;
 
   // Disallow copying and assignment.
   RobotsParseHandler(const RobotsParseHandler&) = delete;
@@ -111,7 +111,7 @@ class RobotsMatcher : protected RobotsParseHandler {
   // [a-zA-Z_-].
   static bool IsValidUserAgentToObey(absl::string_view user_agent);
 
-  // Returns true iff 'url' is allowed to be fetched by any member of the
+  // Returns true if 'url' is allowed to be fetched by any member of the
   // "user_agents" vector. 'url' must be %-encoded according to RFC3986.
   bool AllowedByRobots(absl::string_view robots_body,
                        const std::vector<std::string>* user_agents,
@@ -131,12 +131,12 @@ class RobotsMatcher : protected RobotsParseHandler {
   // the specified user agents.
   bool disallow_ignore_global() const;
 
-  // Returns true iff, when AllowedByRobots() was called, the robots file
+  // Returns true if, when AllowedByRobots() was called, the robots file
   // referred explicitly to one of the specified user agents.
   bool ever_seen_specific_agent() const;
 
   // Returns the line that matched or 0 if none matched.
-  const int matching_line() const;
+  int matching_line() const;
 
  protected:
   // Parse callbacks.
