@@ -29,8 +29,13 @@
 // url: a url to be matched against records in the robots.txt. The URL must be
 // %-encoded according to RFC3986.
 //   For example: https://example.com/accessible/url.html
-// Returns: Prints a sentence with verdict about whether 'user_agent' is allowed
+// Output: Prints a sentence with verdict about whether 'user_agent' is allowed
 // to access 'url' based on records in 'local_path_to_robotstxt'.
+// Return code:
+//   0 when the url is ALLOWED for the user_agent.
+//   1 when the url is DISALLOWED for the user_agent.
+//   2 when --help is requested or if there is something invalid in the flags
+//   passed.
 //
 #include <fstream>
 #include <iostream>
@@ -72,18 +77,18 @@ int main(int argc, char** argv) {
   std::string filename = argc >= 2 ? argv[1] : "";
   if (filename == "-h" || filename == "-help" || filename == "--help") {
     ShowHelp(argc, argv);
-    return 0;
+    return 2;
   }
   if (argc != 4) {
     std::cerr << "Invalid amount of arguments. Showing help." << std::endl
               << std::endl;
     ShowHelp(argc, argv);
-    return 1;
+    return 2;
   }
   std::string robots_content;
   if (!(LoadFile(filename, &robots_content))) {
     std::cerr << "failed to read file \"" << filename << "\"" << std::endl;
-    return 1;
+    return 2;
   }
 
   std::string user_agent = argv[2];
@@ -98,4 +103,6 @@ int main(int argc, char** argv) {
     std::cout << "notice: robots file is empty so all user-agents are allowed"
               << std::endl;
   }
+
+  return allowed ? 0 : 1;
 }
