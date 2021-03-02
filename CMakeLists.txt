@@ -124,7 +124,7 @@ INCLUDE_DIRECTORIES(.)
 SET(LIBROBOTS_LIBS)
 
 SET(robots_SRCS ./robots.cc)
-SET(robots_LIBS absl::base absl::container absl::strings)
+SET(robots_LIBS absl::base absl::strings)
 
 ADD_LIBRARY(robots SHARED ${robots_SRCS})
 TARGET_LINK_LIBRARIES(robots ${robots_LIBS})
