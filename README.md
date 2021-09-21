@@ -117,6 +117,11 @@ of the robots tool, follows the format specified by RFC3986, since this library
 will not perform full normalization of those URI parameters. Only if the URI is
 in this format, the matching will be done according to the REP specification.
 
+Also note that the library, or the included binary, do not handle implementation
+logic that a crawler might apply outside of parsing and matching, e.g. `Applebot`
+respecting the rules specified for `User-agent: Googlebot` if not explicitly
+defined, or `Googlebot-Image` falling back to use `Googlebot` in a similar manner.
+
 ## License
 
 The robots.txt parser and matcher C++ library is licensed under the terms of the
