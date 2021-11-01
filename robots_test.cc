@@ -123,6 +123,32 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BazBot", url_foo));
 }
 
+// Group must not be closed by rules not explicitly defined in the REP I-D.
+// See REP I-D section "Protocol Definition".
+// https://tools.ietf.org/html/draft-koster-rep#section-2.1
+TEST(RobotsUnittest, ID_LineSyntax_Groups_OtherRules) {
+  {
+    const absl::string_view robotstxt =
+        "User-agent: BarBot\n"
+        "Sitemap: https://foo.bar/sitemap\n"
+        "User-agent: *\n"
+        "Disallow: /\n";
+    std::string url = "http://foo.bar/";
+    EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "FooBot", url));
+    EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BarBot", url));
+  }
+  {
+    const absl::string_view robotstxt =
+        "User-agent: FooBot\n"
+        "Invalid-Unknown-Line: unknown\n"
+        "User-agent: *\n"
+        "Disallow: /\n";
+    std::string url = "http://foo.bar/";
+    EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "FooBot", url));
+    EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BarBot", url));
+  }
+}
+
 // REP lines are case insensitive. See REP I-D section "Protocol Definition".
 // https://tools.ietf.org/html/draft-koster-rep#section-2.1
 TEST(RobotsUnittest, ID_REPLineNamesCaseInsensitive) {

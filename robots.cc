@@ -647,14 +647,10 @@ int LongestMatchRobotsMatchStrategy::MatchDisallow(absl::string_view path,
   return Matches(path, pattern) ? pattern.length() : -1;
 }
 
-void RobotsMatcher::HandleSitemap(int line_num, absl::string_view value) {
-  seen_separator_ = true;
-}
+void RobotsMatcher::HandleSitemap(int line_num, absl::string_view value) {}
 
 void RobotsMatcher::HandleUnknownAction(int line_num, absl::string_view action,
-                                        absl::string_view value) {
-  seen_separator_ = true;
-}
+                                        absl::string_view value) {}
 
 void ParsedRobotsKey::Parse(absl::string_view key) {
   key_text_ = absl::string_view();
