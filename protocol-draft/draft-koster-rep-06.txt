@@ -1,22 +1,21 @@
 Network Working Group                                          M. Koster
 Internet-Draft                                Stalworthy Computing, Ltd.
-Intended status: Draft Standard                                G. Illyes
-Expires: January 9, 2020                                       H. Zeller
+Intended status: Informational                                 G. Illyes
+Expires: May 6, 2022                                           H. Zeller
                                                                L. Harvey
                                                                   Google
-                                                           July 07, 2019
+                                                       November 07, 2021
 
 
                        Robots Exclusion Protocol
-                         draft-koster-rep-00
+                         draft-koster-rep-06
 
 Abstract
 
-   This document standardizes and extends the "Robots Exclusion
-   Protocol" <http://www.robotstxt.org/> method originally defined by
-   Martijn Koster in 1996 for service owners to control how content
-   served by their services may be accessed, if at all, by automatic
-   clients known as crawlers.
+   This document specifies and extends the "Robots Exclusion Protocol" 
+   method originally defined by Martijn Koster in 1996 for service 
+   owners to control how content served by their services may be 
+   accessed, if at all, by automatic clients known as crawlers.
 
 Status of This Memo
 
@@ -37,11 +36,11 @@ Status of This Memo
    be created, except to format it for publication as an RFC or to
    translate it into languages other than English.
 
-   This Internet-Draft will expire on January 9, 2020.
+   This Internet-Draft will expire on May 6, 2022.
 
 Copyright Notice
 
-   Copyright (c) 2019 IETF Trust and the persons identified as the
+   Copyright (c) 2020 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -54,8 +53,8 @@ Copyright Notice
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
-Koster, et al.           Expires January 9, 2020                [Page 1]
-
+Koster, et al.           Expires May 6, 2022                    [Page 1]
+
 Internet-Draft                     I-D                         July 2019
 
 Table of Contents
@@ -80,23 +79,24 @@ Table of Contents
      3.2.  Longest Match . . . . . . . . . . . . . . . . . . . . . .   9
    4.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
-     4.2.  URIs  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   10
+     4.2.  Informative References. . . . . . . . . . . . . . . . . .   9
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  10
 
 1.  Introduction
 
    This document applies to services that provide resources that clients
-   can access through URIs as defined in RFC3986 [1].  For example, in
-   the context of HTTP, a browser is a client that displays the content
-   of a web page.
+   can access through URIs as defined in [RFC3986].  For example, in the
+   context of HTTP, a browser is a client that displays the content of a 
+   web page.
 
    Crawlers are automated clients.  Search engines for instance have
    crawlers to recursively traverse links for indexing as defined in
-   RFC8288 [2].
+   [RFC8288].
 
    It may be inconvenient for service owners if crawlers visit the
-   entirety of their URI space.  This document specifies the rules that
-   crawlers MUST obey when accessing URIs.
+   entirety of their URI space.  This document specifies the rules 
+   originally defined by the "Robots Exclusion Protocol" [1] that
+   crawlers are expected to obey when accessing URIs.
 
    These rules are not a form of access authorization.
 
@@ -110,10 +110,8 @@ Table of Contents
 
 
 
-
-
-Koster, et al.           Expires January 9, 2020                [Page 2]
-
+Koster, et al.           Expires May 6, 2022                    [Page 2]
+
 Internet-Draft                     I-D                         July 2019
 
 
@@ -121,20 +119,22 @@ Internet-Draft                     I-D                         July 2019
 
 2.1.  Protocol definition
 
-   The protocol language consists of rule(s) and group(s):
+   The protocol language consists of rule(s) and group(s) that the 
+   service makes available in a file named 'robots.txt' as described in 
+   section 2.3:
 
    o  *Rule*: A line with a key-value pair that defines how a crawler
-      may access URIs. See section The Allow and Disallow lines.
+      may access URIs. See section 2.2.2.
 
    o  *Group*: One or more user-agent lines that is followed by one or
       more rules. The group is terminated by a user-agent line or end
-      of file. See User-agent line. The last group may have no rules,
-      which means it implicitly allows everything.
+      of file. See 2.2.1. The last group may have no rules, which means
+      it implicitly allows everything.
 
 2.2.  Formal syntax
 
    Below is an Augmented Backus-Naur Form (ABNF) description, as
-   described in RFC5234 [3].
+   described in [RFC5234].
 
    robotstxt = *(group / emptyline)
    group = startgroupline                ; We start with a user-agent
@@ -153,30 +153,33 @@ Internet-Draft                     I-D                         July 2019
    ; conform. Apply Postel's law.
 
    product-token = identifier / "*"
-   path-pattern = "/" *(UTF8-char-noctl) ; valid URI path pattern
+   path-pattern = "/" *UTF8-char-noctl ; valid URI path pattern
    empty-pattern = *WS
 
-   identifier = 1*(%x2d / %x41-5a / %x5f / %x61-7a)
-   comment = "#"*(UTF8-char-noctl / WS / "#")
-   emptyline = EOL EOL = *WS [comment] NL ; end-of-line may have
-                                          ; optional trailing comment
+   identifier = 1*(%x2D / %x41-5A / %x5F / %x61-7A)
+   comment = "#" *(UTF8-char-noctl / WS / "#")
+   emptyline = EOL 
+   EOL = *WS [comment] NL ; end-of-line may have
+                          ; optional trailing comment
    NL = %x0D / %x0A / %x0D.0A
    WS = %x20 / %x09
 
 
-Koster, et al.           Expires January 9, 2020                [Page 3]
 
+
+Koster, et al.           Expires May 6, 2022                    [Page 3]
+
 Internet-Draft                     I-D                         July 2019
 
-   ; UTF8 derived from RFC3629, but excluding control characters
+   ; UTF8 derived from [RFC3629], but excluding control characters
 
    UTF8-char-noctl = UTF8-1-noctl / UTF8-2 / UTF8-3 / UTF8-4
    UTF8-1-noctl = %x21 / %x22 / %x24-7F ; excluding control, space, '#'
    UTF8-2 = %xC2-DF UTF8-tail
-   UTF8-3 = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2( UTF8-tail ) /
-            %xED %x80-9F UTF8-tail / %xEE-EF 2( UTF8-tail )
-   UTF8-4 = %xF0 %x90-BF 2( UTF8-tail ) / %xF1-F3 3( UTF8-tail ) /
-            %xF4 %x80-8F 2( UTF8-tail )
+   UTF8-3 = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2UTF8-tail /
+            %xED %x80-9F UTF8-tail / %xEE-EF 2UTF8-tail
+   UTF8-4 = %xF0 %x90-BF 2UTF8-tail / %xF1-F3 3UTF8-tail /
+            %xF4 %x80-8F 2UTF8-tail
 
    UTF8-tail = %x80-BF
 
@@ -219,25 +222,25 @@ Internet-Draft                     I-D                         July 2019
    SHOULD be case sensitive.  The most specific match found MUST be
    used.  The most specific match is the match that has the most octets.
    If an allow and disallow rule is equivalent, the allow SHOULD be
-   used.  If no match is found amongst the rules in a group for a
+   
 
-
-Koster, et al.           Expires January 9, 2020                [Page 4]
-
+Koster, et al.           Expires May 6, 2022                    [Page 4]
+
 Internet-Draft                     I-D                         July 2019
 
 
+   used.  If no match is found amongst the rules in a group for a
    matching user-agent, or there are no rules in the group, the URI is
    allowed.  The /robots.txt URI is implicitly allowed.
 
    Octets in the URI and robots.txt paths outside the range of the US-
    ASCII coded character set, and those in the reserved range defined by
-   RFC3986 [1], MUST be percent-encoded as defined by RFC3986 [1] prior
-   to comparison.
+   [RFC3986], MUST be percent-encoded as defined by [RFC3986] prior to 
+   comparison.
 
    If a percent-encoded US-ASCII octet is encountered in the URI, it
    MUST be unencoded prior to comparison, unless it is a reserved
-   character in the URI as defined by RFC3986 [1] or the character is
+   character in the URI as defined by [RFC3986] or the character is
    outside the unreserved character range.  The match evaluates
    positively if and only if the end of the path from the rule is
    reached before a difference in octets is encountered.
@@ -278,8 +281,8 @@ Internet-Draft                     I-D                         July 2019
 
 
 
-Koster, et al.           Expires January 9, 2020                [Page 5]
-
+Koster, et al.           Expires May 6, 2022                    [Page 5]
+
 Internet-Draft                     I-D                         July 2019
 
 
@@ -315,16 +318,18 @@ Internet-Draft                     I-D                         July 2019
 2.2.4.  Other records
 
    Clients MAY interpret other records that are not part of the
-   robots.txt protocol.  For example, 'sitemap' [4].
+   robots.txt protocol.  For example, 'sitemap' [2]. Parsing of other 
+   records MUST NOT interfere with the parsing of explicitly defined 
+   records in section 2.
 
 2.3.  Access method
 
    The rules MUST be accessible in a file named "/robots.txt" (all lower
    case) in the top level path of the service.  The file MUST be UTF-8
-   encoded (as defined in RFC3629 [5]) and Internet Media Type "text/
-   plain" (as defined in RFC2046 [6]).
+   encoded (as defined in [RFC3629]) and Internet Media Type "text/
+   plain" (as defined in [RFC2046]).
 
-   As per RFC3986 [1], the URI of the robots.txt is:
+   As per [RFC3986], the URI of the robots.txt is:
 
    "scheme:[//authority]/robots.txt"
 
@@ -333,9 +338,8 @@ Internet-Draft                     I-D                         July 2019
        http://www.example.com/robots.txt
 
 
-
-Koster, et al.           Expires January 9, 2020                [Page 6]
-
+Koster, et al.           Expires May 6, 2022                    [Page 6]
+
 Internet-Draft                     I-D                         July 2019
 
 
@@ -355,7 +359,7 @@ Internet-Draft                     I-D                         July 2019
    The server may respond to a robots.txt fetch request with a redirect,
    such as HTTP 301 and HTTP 302.  The crawlers SHOULD follow at least
    five consecutive redirects, even across authorities (for example
-   hosts in case of HTTP), as defined in RFC1945 [7].
+   hosts in case of HTTP), as defined in [RFC1945].
 
    If a robots.txt file is reached within five consecutive redirects,
    the robots.txt file MUST be fetched, parsed, and its rules followed
@@ -390,8 +394,9 @@ Internet-Draft                     I-D                         July 2019
 
 
 
-Koster, et al.           Expires January 9, 2020                [Page 7]
 
+Koster, et al.           Expires May 6, 2022                    [Page 7]
+
 Internet-Draft                     I-D                         July 2019
 
 
@@ -403,7 +408,7 @@ Internet-Draft                     I-D                         July 2019
 2.4.  Caching
 
    Crawlers MAY cache the fetched robots.txt file's contents.  Crawlers
-   MAY use standard cache control as defined in RFC2616 [8].  Crawlers
+   MAY use standard cache control as defined in [RFC2616].  Crawlers
    SHOULD NOT use the cached version for more than 24 hours, unless the
    robots.txt is unreachable.
 
@@ -414,9 +419,9 @@ Internet-Draft                     I-D                         July 2019
 
 2.6.  Security Considerations
 
-   The Robots Exclusion Protocol MUST NOT be used as a form of security
-   measures. Listing URIs in the robots.txt file exposes the URI
-   publicly and thus making the URIs discoverable.
+   The Robots Exclusion Protocol is not a substitute for more valid 
+   content security measures. Listing URIs in the robots.txt file 
+   exposes the URI publicly and thus making the URIs discoverable.
 
 2.7.  IANA Considerations.
 
@@ -434,8 +439,21 @@ Internet-Draft                     I-D                         July 2019
       user-agent.
    o  *quxbot:* Empty group at end of file.
 
-Koster, et al.           Expires January 9, 2020                [Page 8]
 
+
+
+
+
+
+
+
+
+
+
+
+
+Koster, et al.           Expires May 6, 2022                    [Page 8]
+
 Internet-Draft                     I-D                         July 2019
 
    <CODE BEGINS>
@@ -455,8 +473,8 @@ Internet-Draft                     I-D                         July 2019
 
 3.2.  Longest Match
 
-   The following example shows that in the case of a two rules, the
-   longest one MUST be used for matching.  In the following case,
+   The following example shows that in the case of two rules, the 
+   longest one is used for matching.  In the following case,
    /example/page/disallowed.gif MUST be used for the URI
    example.com/example/page/disallow.gif .
 
@@ -469,34 +487,44 @@ Internet-Draft                     I-D                         July 2019
 4.  References
 
 4.1.  Normative References
-
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+   [RFC1945]  Berners-Lee, T., Fielding, R., and H. Frystyk, 
+              "Hypertext Transfer Protocol -- HTTP/1.0", RFC 1945, 
+              May 1996.
+   [RFC2046]  Freed, N., Borenstein, N., "Multipurpose Internet Mail 
+              Extensions (MIME) Part Two: Media Types", RFC 2046, 
+              November 1996.
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate 
               Requirement Levels", BCP 14, RFC 2119, March 1997.
-   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in
-              RFC 2119 Key Words", BCP 14, RFC 2119, May 2017.
+   [RFC2616]  Fielding, R., Gettys, J., Mogul, J., Frystyk, H., 
+              Masinter, L., Leach, P., Berners-Lee, T., "Hypertext 
+              Transfer Protocol -- HTTP/1.1", RFC 2616, June 1999.
+   [RFC3629]  Yergeau, F., "UTF-8, a transformation format of ISO 
+              10646", STD 63, RFC 3629, November 2003.
+   [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform 
+              Resource Identifier (URI): Generic Syntax", STD 66, 
+              RFC 3986, January 2005.
+   [RFC5234]  Crocker, D., Overell, P., "Augmented BNF for Syntax 
+              Specifications: ABNF", RFC 5234, STD 68, January 2008.
 
-4.2.  URIs
 
-   [1] https://tools.ietf.org/html/rfc3986
 
-   [2] https://tools.ietf.org/html/rfc8288
 
-   [3] https://tools.ietf.org/html/rfc5234
-
-   [4] https://www.sitemaps.org/index.html
-
-   [5] https://tools.ietf.org/html/rfc3629
-
-   [6] https://tools.ietf.org/html/rfc2046
-
-Koster, et al.           Expires January 9, 2020                [Page 9]
-
+Koster, et al.           Expires May 6, 2022                    [Page 9]
+
 Internet-Draft                     I-D                         July 2019
 
-   [7] https://tools.ietf.org/html/rfc1945
 
-   [8] https://tools.ietf.org/html/rfc2616
+   [RFC8174]  Leiba, B., "Ambiquity of Uppercase vs Lowercase in RFC 
+              2119  Key Words", BCP 14, RFC 2119, Mat 2017.
+   [RFC8288]  Nottingham, M., "Web Linking", RFC 8288, October 2017.
 
+   
+4.2.  Informative References
+
+   [1] http://www.robotstxt.org/
+
+   [2] https://www.sitemaps.org/index.html
+   
 Authors' Address
 
    Martijn Koster
@@ -526,4 +554,4 @@ Authors' Address
 
 
 
-Koster, et al.           Expires January 9, 2020               [Page 10]
+Koster, et al.           Expires May 6, 2022                   [Page 10]
