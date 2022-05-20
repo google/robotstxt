@@ -12,7 +12,7 @@
   <!ENTITY RFC8288 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml">
 ]>
 
-<rfc ipr="trust200902" category="info" docName="draft-koster-rep-07" >
+<rfc ipr="trust200902" category="std" docName="draft-koster-rep-09" >
 
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
 
@@ -75,7 +75,7 @@
       </address>
     </author>
 
-    <date year="2022" month="May" day="2"/>
+    <date year="2022" month="May" day="20"/>
 
     <area>General</area>
 
@@ -153,9 +153,8 @@
     rule = *WS ("allow" / "disallow") *WS ":"
           *WS (path-pattern / empty-pattern) EOL
 
-    ; parser implementors: add additional lines you need (for
-    ; example, sitemaps), and be lenient when reading lines that don't
-    ; conform. Apply Postel's law.
+    ; parser implementors: define additional lines you need (for
+    ; example, sitemaps).
 
     product-token = identifier / "*"
     path-pattern = "/" *UTF8-char-noctl ; valid URI path pattern
@@ -200,22 +199,26 @@
             <c>user-agent: ExampleBot</c>
           </texttable>
 
-          <t> Crawlers MUST find the group that matches the product token exactly,
-              and then obey the rules of the group. If there is more than one
-              group matching the user-agent, the matching groups' rules MUST be
-              combined into one group. The matching MUST be case-insensitive. If
-              no matching group exists, crawlers MUST obey the first group with a
+          <t> Crawlers <bcp14>MUST</bcp14> find the group that matches the
+              product token exactly, and then obey the rules of the group.
+              If there is more than one group matching the user-agent, the
+              matching groups' rules <bcp14>MUST</bcp14> be combined into one
+              group and parsed according to section 2.2.2. The matching
+              <bcp14>MUST</bcp14> be case-insensitive. If no matching group
+              exists, crawlers <bcp14>MUST</bcp14> obey the first group with a
               user-agent line with a "*" value, if present. If no group satisfies
               either condition, or no groups are present at all, no rules apply. </t>
         </section>
         <section anchor="the-allow-and-disallow-lines" title="The Allow and Disallow Lines">
           <t> These lines indicate whether accessing a URI that matches the
               corresponding path is allowed or disallowed. </t>
+
           <t> To evaluate if access to a URI is allowed, a robot <bcp14>MUST</bcp14>
               match the paths in allow and disallow rules against the URI.
               The matching <bcp14>SHOULD</bcp14> be case sensitive. The most
               specific match found <bcp14>MUST</bcp14> be used. The most specific
-              match is the match that has the most octets. If an allow and disallow
+              match is the match that has the most octets. Duplicate rules in a
+              group <bcp14>MAY</bcp14> be deduplicated. If an allow and disallow
               rule is equivalent, the allow <bcp14>SHOULD</bcp14> be used. If no
               match is found amongst the rules in a group for a matching user-agent,
               or there are no rules in the group, the URI is allowed. The
@@ -296,7 +299,11 @@
         <section anchor="other-records" title="Other Records">
           <t> Clients <bcp14>MAY</bcp14> interpret other records that are not
               part of the robots.txt protocol. For example, &#39;sitemap&#39;
-              <xref target="SITEMAPS"/>. Parsing of other records
+              <xref target="SITEMAPS"/>. Clients MAY be lenient when
+              interpreting other records. For example, clients may accept
+              common typos of the record. </t>
+
+          <t> Parsing of other records
               <bcp14>MUST NOT</bcp14> interfere with the parsing of explicitly
               defined records in section 2. </t>
         </section>
