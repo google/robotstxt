@@ -75,7 +75,7 @@
       </address>
     </author>
 
-    <date year="2022" month="May" day="20"/>
+    <date year="2022" month="June" day="2"/>
 
     <area>General</area>
 
@@ -182,18 +182,23 @@
     ]]>
         </artwork></figure>
         <section anchor="the-user-agent-line" title="The User-Agent Line">
-          <t> Crawlers set a product token to find relevant groups. The product token
-              <bcp14>MUST</bcp14> contain only &quot;a-zA-Z_-&quot; characters. The
-              product token <bcp14>SHOULD</bcp14> be part of the identification string
-              that the crawler sends to the service (for example, in the case of HTTP,
-              the product name <bcp14>SHOULD</bcp14> be in the user-agent header).
+          <t> Crawlers set their own name, which is called a product token, to find
+              relevant groups. The product token <bcp14>MUST</bcp14> contain only
+              &quot;a-zA-Z_-&quot; characters. The product token <bcp14>SHOULD</bcp14>
+              be a substring of the identification string that the crawler sends to
+              the service (for example, in the case of HTTP, the product token
+              <bcp14>SHOULD</bcp14> be a substring in the user-agent header).
               The identification string <bcp14>SHOULD</bcp14> describe the purpose of
-              the crawler. Here&#39;s an example of an HTTP header with a link
-              pointing to a page describing the purpose of the ExampleBot crawler
-              which appears both in the HTTP header and as a product token: </t>
+              the crawler. Here&#39;s an example of a user-agent HTTP request header
+              with a link pointing to a page describing the purpose of the
+              ExampleBot crawler, which appears as a substring in the user-agent HTTP
+              header and as a product token in the robots.txt user-agent line: </t>
 
-          <texttable title="Example of a user-agent header and user-agent robots.txt token for ExampleBot">
-            <ttcol align="left">HTTP header</ttcol>
+          <texttable title="Example of a user-agent HTTP header and 
+                            robots.txt user-agent line for the ExampleBot product token. 
+                            Note that the product token (ExampleBot) is a substring of the 
+                            user-agent HTTP header">
+            <ttcol align="left">user-agent HTTP header</ttcol>
             <ttcol align="left">robots.txt user-agent line</ttcol>
             <c>user-agent: Mozilla/5.0 (compatible; ExampleBot/0.1; https://www.example.com/bot.html)</c>
             <c>user-agent: ExampleBot</c>
@@ -203,11 +208,48 @@
               product token exactly, and then obey the rules of the group.
               If there is more than one group matching the user-agent, the
               matching groups' rules <bcp14>MUST</bcp14> be combined into one
-              group and parsed according to section 2.2.2. The matching
-              <bcp14>MUST</bcp14> be case-insensitive. If no matching group
-              exists, crawlers <bcp14>MUST</bcp14> obey the first group with a
-              user-agent line with a "*" value, if present. If no group satisfies
-              either condition, or no groups are present at all, no rules apply. </t>
+              group and parsed according to section 2.2.2. </t>
+
+          <texttable title="Example of how to merge two robots.txt 
+                            groups that match the same product token">
+            <ttcol align="left">Two groups that match the same product token exactly</ttcol>
+            <ttcol align="left">Merged group</ttcol>
+            <c>user-agent: ExampleBot<br />
+              disallow: /foo<br />
+              disallow: /bar<br />
+              <br />
+              user-agent: ExampleBot<br />
+              disallow: /baz
+            </c>
+            <c>user-agent: ExampleBot<br />
+              disallow: /foo<br />
+              disallow: /bar<br />
+              disallow: /baz</c>
+          </texttable>
+
+          <t> The matching of the product token <bcp14>MUST</bcp14> be case-insensitive.
+              If no matching group exists, crawlers <bcp14>MUST</bcp14> obey the group
+              with a user-agent line with the "*" value, if present. </t>
+
+          <texttable title="Example of no matching groups other than the '*' 
+                            for the ExampleBot product token">
+            <ttcol align="left">Two groups that don't explicitly match ExampleBot</ttcol>
+            <ttcol align="left">Applicable group for ExampleBot</ttcol>
+            <c>user-agent: *<br />
+              disallow: /foo<br />
+              disallow: /bar<br />
+              <br />
+              user-agent: BazBot<br />
+              disallow: /baz
+            </c>
+            <c>user-agent: *<br />
+              disallow: /foo<br />
+              disallow: /bar</c>
+          </texttable>
+
+          <t> If no group matches the product token and there is no group with a user-agent
+              line with the "*" value, or no groups are present at all, no
+              rules apply. </t>
         </section>
         <section anchor="the-allow-and-disallow-lines" title="The Allow and Disallow Lines">
           <t> These lines indicate whether accessing a URI that matches the
@@ -401,46 +443,61 @@
     </section>
     <section anchor="examples" title="Examples">
       <section anchor="simple-example" title="Simple Example">
-      <t> The following example shows: </t>
-      <t>
-        <list style="symbols">
-          <t> foobot: A regular case. A single user-agent token followed
-              by rules. </t>
-          <t> barbot and bazbot: A group that&#39;s relevant for more
-              than one user-agent. </t>
-          <t> quxbot: An empty group at end of the file. </t>
-        </list>
-      </t>
-      <figure>
-        <artwork><![CDATA[
-          User-Agent : foobot
-          Disallow : /example/page.html
-          Disallow : /example/disallowed.gif
+        <t> The following example shows: </t>
+        <t>
+          <list style="symbols">
+            <t> *: A group that's relevant to all user-agents that
+                don't have an explicitly defined matching group. It allows
+                access to the URLs with the /publications/ path prefix, and
+                restricts access to the URLs with the /example/ path prefix
+                and to all URLs with .gif suffix. </t>
+            <t> foobot: A regular case. A single user-agent followed
+                by rules. The crawler only has access to two URL path
+                prefixes on the site, /example/page.html and
+                /example/allowed.gif. </t>
+            <t> barbot and bazbot: A group that&#39;s relevant for more
+                than one user-agent. The crawlers are not allowed to access
+                the URLs with the /example/page.html path prefix, but
+                otherwise have unrestricted access. </t>
+            <t> quxbot: An empty group at end of the file. The crawler has
+                unrestricted access to the URLs on the site. </t>
+          </list>
+        </t>
+        <figure>
+          <artwork><![CDATA[
+            User-agent: *
+            Disallow: /*.gif$
+            Disallow: /example/
+            Allow: /publications/
 
-          User-Agent : barbot
-          User-Agent : bazbot
-          Allow : /example/page.html
-          Disallow : /example/disallowed.gif
+            User-Agent : foobot
+            Disallow: /
+            Allow : /example/page.html
+            Allow : /example/allowed.gif
 
-          User-Agent: quxbot
+            User-Agent : barbot
+            User-Agent : bazbot
+            Disallow : /example/page.html
 
-          EOF
-        ]]></artwork>
-      </figure>
-    </section>
+            User-Agent: quxbot
+
+            EOF
+          ]]></artwork>
+        </figure>
+      </section>
       <section anchor="longest-match" title="Longest Match">
-      <t> The following example shows that in the case of two rules, the
-          longest one is used for matching. In the following case,
-          /example/page/disallowed.gif <bcp14>MUST</bcp14> be used for
-          the URI example.com/example/page/disallow.gif. </t>
-      <figure>
-        <artwork><![CDATA[
-          User-Agent : foobot
-          Allow : /example/page/
-          Disallow : /example/page/disallowed.gif
-        ]]></artwork>
-      </figure>
-    </section>
+        <t> The following example shows that in the case of two rules, the
+            longest one is used for matching. In the following case,
+            /example/page/disallowed.gif <bcp14>MUST</bcp14> be used for
+            the URI example.com/example/page/disallow.gif. </t>
+        <figure>
+          <artwork><![CDATA[
+            User-Agent : foobot
+            Allow : /example/page/
+            Disallow : /example/page/disallowed.gif
+          ]]></artwork>
+        </figure>
+      </section>
     </section>
   </middle>
 
