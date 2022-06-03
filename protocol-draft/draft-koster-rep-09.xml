@@ -75,7 +75,7 @@
       </address>
     </author>
 
-    <date year="2022" month="June" day="2"/>
+    <date year="2022" month="June" day="3"/>
 
     <area>General</area>
 
@@ -124,15 +124,17 @@
       <section anchor="protocol-definition" title="Protocol Definition">
         <t> The protocol language consists of rule(s) and group(s) that the service
             makes available in a file named &#39;robots.txt&#39; as described in
-            section 2.3: </t>
+            <xref target="access-method" />: </t>
         <t>
           <list style="symbols">
             <t> Rule: A line with a key-value pair that defines how a
-                crawler may access URIs. See section 2.2.2. </t>
+                crawler may access URIs. See
+                <xref target="the-allow-and-disallow-lines" />. </t>
             <t> Group: One or more user-agent lines that is followed by
                 one or more rules. The group is terminated by a user-agent line
-                or end of file. See section 2.2.1. The last group may have no rules,
-                which means it implicitly allows everything. </t>
+                or end of file. See <xref target="the-user-agent-line" />.
+                The last group may have no rules, which means it implicitly
+                allows everything. </t>
           </list> </t>
       </section>
       <section anchor="formal-syntax" title="Formal Syntax">
@@ -184,7 +186,9 @@
         <section anchor="the-user-agent-line" title="The User-Agent Line">
           <t> Crawlers set their own name, which is called a product token, to find
               relevant groups. The product token <bcp14>MUST</bcp14> contain only
-              &quot;a-zA-Z_-&quot; characters. The product token <bcp14>SHOULD</bcp14>
+              upper and lowercase letters (&quot;a-z&quot; and &quot;A-Z&quot;),
+              underscores (&quot;_&quot;), and hyphens (&quot;-&quot;).
+              The product token <bcp14>SHOULD</bcp14>
               be a substring of the identification string that the crawler sends to
               the service (for example, in the case of HTTP, the product token
               <bcp14>SHOULD</bcp14> be a substring in the user-agent header).
@@ -208,9 +212,10 @@
               product token exactly, and then obey the rules of the group.
               If there is more than one group matching the user-agent, the
               matching groups' rules <bcp14>MUST</bcp14> be combined into one
-              group and parsed according to section 2.2.2. </t>
+              group and parsed according to
+              <xref target="the-allow-and-disallow-lines" />. </t>
 
-          <texttable title="Example of how to merge two robots.txt 
+          <texttable title="Example of how to merge two robots.txt
                             groups that match the same product token">
             <ttcol align="left">Two groups that match the same product token exactly</ttcol>
             <ttcol align="left">Merged group</ttcol>
@@ -347,7 +352,7 @@
 
           <t> Parsing of other records
               <bcp14>MUST NOT</bcp14> interfere with the parsing of explicitly
-              defined records in section 2. </t>
+              defined records in <xref target="specification" />. </t>
         </section>
       </section>
       <section anchor="access-method" title="Access Method">
