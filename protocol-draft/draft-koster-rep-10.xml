@@ -12,7 +12,7 @@
   <!ENTITY RFC8288 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml">
 ]>
 
-<rfc ipr="trust200902" category="std" docName="draft-koster-rep-09" >
+<rfc ipr="trust200902" category="std" docName="draft-koster-rep-10" >
 
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
 
@@ -75,7 +75,7 @@
       </address>
     </author>
 
-    <date year="2022" month="June" day="3"/>
+    <date year="2022" month="June" day="15"/>
 
     <area>General</area>
 
@@ -103,7 +103,7 @@
       <t> It may be inconvenient for service owners if crawlers visit the entirety of
           their URI space. This document specifies the rules originally defined by
           the &quot;Robots Exclusion Protocol&quot; <xref target="ROBOTSTXT"/> that crawlers
-          are expected to obey when accessing URIs. </t>
+          are requested to honor when accessing URIs. </t>
 
       <t> These rules are not a form of access authorization. </t>
 
@@ -208,11 +208,12 @@
             <c>user-agent: ExampleBot</c>
           </texttable>
 
-          <t> Crawlers <bcp14>MUST</bcp14> find the group that matches the
-              product token exactly, and then obey the rules of the group.
-              If there is more than one group matching the user-agent, the
-              matching groups' rules <bcp14>MUST</bcp14> be combined into one
-              group and parsed according to
+          <t> Crawlers <bcp14>MUST</bcp14> use case-insensitive matching
+              to find the group that matches the product token, and then
+              obey the rules of the group. If there is more than one
+              group matching the user-agent, the matching groups' rules
+              <bcp14>MUST</bcp14> be combined into one group and parsed
+              according to
               <xref target="the-allow-and-disallow-lines" />. </t>
 
           <texttable title="Example of how to merge two robots.txt
@@ -232,11 +233,10 @@
               disallow: /baz</c>
           </texttable>
 
-          <t> The matching of the product token <bcp14>MUST</bcp14> be case-insensitive.
-              If no matching group exists, crawlers <bcp14>MUST</bcp14> obey the group
+          <t> If no matching group exists, crawlers <bcp14>MUST</bcp14> obey the group
               with a user-agent line with the "*" value, if present. </t>
 
-          <texttable title="Example of no matching groups other than the '*' 
+          <texttable title="Example of no matching groups other than the '*'
                             for the ExampleBot product token">
             <ttcol align="left">Two groups that don't explicitly match ExampleBot</ttcol>
             <ttcol align="left">Applicable group for ExampleBot</ttcol>
@@ -260,9 +260,10 @@
           <t> These lines indicate whether accessing a URI that matches the
               corresponding path is allowed or disallowed. </t>
 
-          <t> To evaluate if access to a URI is allowed, a robot <bcp14>MUST</bcp14>
+          <t> To evaluate if access to a URI is allowed, a crawler <bcp14>MUST</bcp14>
               match the paths in allow and disallow rules against the URI.
-              The matching <bcp14>SHOULD</bcp14> be case sensitive. The most
+              The matching <bcp14>SHOULD</bcp14> be case sensitive. The matching
+              <bcp14>MUST</bcp14> start with the first octet of the path. The most
               specific match found <bcp14>MUST</bcp14> be used. The most specific
               match is the match that has the most octets. Duplicate rules in a
               group <bcp14>MAY</bcp14> be deduplicated. If an allow and disallow
@@ -314,7 +315,7 @@
               detect that the robots.txt file is not UTF8 encoded. </t>
         </section>
         <section anchor="special-characters" title="Special Characters">
-          <t> Crawlers <bcp14>SHOULD</bcp14> allow the following special characters: </t>
+          <t> Crawlers <bcp14>MUST</bcp14> allow the following special characters: </t>
 
           <texttable title="List of special characters in robots.txt files">
             <ttcol align='left'>Character</ttcol>
@@ -344,10 +345,10 @@
           </texttable>
         </section>
         <section anchor="other-records" title="Other Records">
-          <t> Clients <bcp14>MAY</bcp14> interpret other records that are not
+          <t> Crawlers <bcp14>MAY</bcp14> interpret other records that are not
               part of the robots.txt protocol. For example, &#39;sitemap&#39;
-              <xref target="SITEMAPS"/>. Clients MAY be lenient when
-              interpreting other records. For example, clients may accept
+              <xref target="SITEMAPS"/>. Crawlers MAY be lenient when
+              interpreting other records. For example, crawlers may accept
               common typos of the record. </t>
 
           <t> Parsing of other records
@@ -402,7 +403,7 @@
               in the 400-499 range. </t>
 
           <t> If a server status code indicates that the robots.txt file is
-              unavailable to the client, then crawlers MAY access any
+              unavailable to the crawler, then the crawler MAY access any
               resources on the server. </t>
         </section>
         <section anchor="unreachable-status" title="Unreachable Status">
@@ -410,16 +411,15 @@
               errors, this means the robots.txt is undefined and the crawler
               <bcp14>MUST</bcp14> assume complete disallow. For example, in
               the context of HTTP, an unreachable robots.txt has a response
-              code in the 500-599 range. For other undefined status codes,
-              the crawler <bcp14>MUST</bcp14> assume the robots.txt is
-              unreachable. </t>
+              code in the 500-599 range. </t>
           <t> If the robots.txt is undefined for a reasonably long period of
-              time (for example, 30 days), clients <bcp14>MAY</bcp14> assume
-              the robots.txt is unavailable or continue to use a cached
+              time (for example, 30 days), crawlers <bcp14>MAY</bcp14> assume
+              the robots.txt is unavailable as defined in
+              <xref target="unavailable-status"/> or continue to use a cached
               copy. </t>
         </section>
         <section anchor="parsing-errors" title="Parsing Errors">
-          <t> Crawlers <bcp14>SHOULD</bcp14> try to parse each line of the
+          <t> Crawlers <bcp14>MUST</bcp14> try to parse each line of the
               robots.txt file. Crawlers <bcp14>MUST</bcp14> use the parseable
               rules. </t>
 
@@ -440,8 +440,8 @@
     </section>
     <section anchor="security" title="Security Considerations">
       <t> The Robots Exclusion Protocol is not a substitute for more valid
-          content security measures. Listing URIs in the robots.txt file
-          exposes the URI publicly and thus makes the URIs discoverable. </t>
+          content security measures. Listing paths in the robots.txt file
+          exposes them publicly and thus makes the paths discoverable. </t>
     </section>
     <section anchor="IANA" title="IANA Considerations">
       <t> This document has no actions for IANA. </t>
@@ -455,15 +455,20 @@
                 don't have an explicitly defined matching group. It allows
                 access to the URLs with the /publications/ path prefix, and
                 restricts access to the URLs with the /example/ path prefix
-                and to all URLs with .gif suffix. </t>
+                and to all URLs with .gif suffix. The * character designates
+                any character, including the otherwise required forward
+                slash; see <xref target="formal-syntax" />. </t>
             <t> foobot: A regular case. A single user-agent followed
                 by rules. The crawler only has access to two URL path
                 prefixes on the site, /example/page.html and
-                /example/allowed.gif. </t>
+                /example/allowed.gif. The rules of the group are missing
+                the optional whitespace character, which is acceptable as
+                defined in <xref target="formal-syntax" />. </t>
             <t> barbot and bazbot: A group that&#39;s relevant for more
                 than one user-agent. The crawlers are not allowed to access
                 the URLs with the /example/page.html path prefix, but
-                otherwise have unrestricted access. </t>
+                otherwise have unrestricted access to the rest of the URLs
+                on the site. </t>
             <t> quxbot: An empty group at end of the file. The crawler has
                 unrestricted access to the URLs on the site. </t>
           </list>
@@ -471,18 +476,18 @@
         <figure>
           <artwork><![CDATA[
             User-agent: *
-            Disallow: /*.gif$
+            Disallow: *.gif$
             Disallow: /example/
             Allow: /publications/
 
-            User-Agent : foobot
-            Disallow: /
-            Allow : /example/page.html
-            Allow : /example/allowed.gif
+            User-Agent: foobot
+            Disallow:/
+            Allow:/example/page.html
+            Allow:/example/allowed.gif
 
-            User-Agent : barbot
-            User-Agent : bazbot
-            Disallow : /example/page.html
+            User-Agent: barbot
+            User-Agent: bazbot
+            Disallow: /example/page.html
 
             User-Agent: quxbot
 
@@ -497,9 +502,9 @@
             the URI example.com/example/page/disallow.gif. </t>
         <figure>
           <artwork><![CDATA[
-            User-Agent : foobot
-            Allow : /example/page/
-            Disallow : /example/page/disallowed.gif
+            User-Agent: foobot
+            Allow: /example/page/
+            Disallow: /example/page/disallowed.gif
           ]]></artwork>
         </figure>
       </section>
