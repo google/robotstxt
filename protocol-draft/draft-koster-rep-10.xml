@@ -4,12 +4,12 @@
   <!ENTITY RFC1945 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.1945.xml">
   <!ENTITY RFC2046 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2046.xml">
   <!ENTITY RFC2119 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
-  <!ENTITY RFC2616 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2616.xml">
   <!ENTITY RFC3629 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3629.xml">
   <!ENTITY RFC3986 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3986.xml">
   <!ENTITY RFC5234 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5234.xml">
   <!ENTITY RFC8174 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml">
   <!ENTITY RFC8288 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml">
+  <!ENTITY RFC9111 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9111.xml">
 ]>
 
 <rfc ipr="trust200902" category="std" docName="draft-koster-rep-10" >
@@ -431,7 +431,7 @@
       <section anchor="caching" title="Caching">
       <t> Crawlers <bcp14>MAY</bcp14> cache the fetched robots.txt file&#39;s
           contents. Crawlers <bcp14>MAY</bcp14> use standard cache control as
-          defined in <xref target="RFC2616"/>. Crawlers
+          defined in <xref target="RFC9111"/>. Crawlers
           <bcp14>SHOULD NOT</bcp14> use the cached version for more than 24
           hours, unless the robots.txt is unreachable. </t>
     </section>
@@ -518,12 +518,12 @@
       &RFC1945;
       &RFC2046;
       &RFC2119;
-      &RFC2616;
       &RFC3629;
       &RFC3986;
       &RFC5234;
       &RFC8174;
       &RFC8288;
+      &RFC9111;
     </references>
 
     <references title='Informative References'>
