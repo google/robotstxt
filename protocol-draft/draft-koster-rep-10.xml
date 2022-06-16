@@ -85,7 +85,9 @@
       <t> This document specifies and extends the &quot;Robots Exclusion Protocol&quot;
           method originally defined by Martijn Koster in 1996 for service owners
           to control how content served by their services may be accessed, if at
-          all, by automatic clients known as crawlers. </t>
+          all, by automatic clients known as crawlers. Specifically, it adds
+          definition language for the protocol and instructions for handling
+          errors and caching. </t>
     </abstract>
   </front>
 
@@ -384,8 +386,8 @@
         </section>
         <section anchor="redirects" title="Redirects">
           <t> The server may respond to a robots.txt fetch request with a
-              redirect, such as HTTP 301 and HTTP 302. The crawlers
-              <bcp14>SHOULD</bcp14> follow at least five consecutive
+              redirect, such as HTTP 301 and HTTP 302 in case of HTTP. The
+              crawlers <bcp14>SHOULD</bcp14> follow at least five consecutive
               redirects, even across authorities (for example, hosts in case
               of HTTP), as defined in <xref target="RFC1945"/>. </t>
           <t> If a robots.txt file is reached within five consecutive
