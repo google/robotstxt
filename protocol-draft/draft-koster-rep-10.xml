@@ -269,7 +269,7 @@
               specific match found <bcp14>MUST</bcp14> be used. The most specific
               match is the match that has the most octets. Duplicate rules in a
               group <bcp14>MAY</bcp14> be deduplicated. If an allow and disallow
-              rule is equivalent, the allow <bcp14>SHOULD</bcp14> be used. If no
+              rule are equivalent, then the allow rule <bcp14>SHOULD</bcp14> be used. If no
               match is found amongst the rules in a group for a matching user-agent,
               or there are no rules in the group, the URI is allowed. The
               /robots.txt URI is implicitly allowed. </t>
