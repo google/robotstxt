@@ -12,7 +12,7 @@
   <!ENTITY RFC9111 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9111.xml">
 ]>
 
-<rfc ipr="trust200902" category="std" docName="draft-koster-rep-10" >
+<rfc ipr="trust200902" category="std" docName="draft-koster-rep-11" >
 
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
 
@@ -75,7 +75,7 @@
       </address>
     </author>
 
-    <date year="2022" month="June" day="15"/>
+    <date year="2022" month="June" day="21"/>
 
     <area>General</area>
 
@@ -436,14 +436,39 @@
           hours, unless the robots.txt is unreachable. </t>
     </section>
       <section anchor="limits" title="Limits">
-      <t> Crawlers <bcp14>MAY</bcp14> impose a parsing limit that
+      <t> Crawlers <bcp14>SHOULD</bcp14> impose a parsing limit that
       <bcp14>MUST</bcp14> be at least 500 kibibytes (KiB). </t>
     </section>
     </section>
     <section anchor="security" title="Security Considerations">
       <t> The Robots Exclusion Protocol is not a substitute for more valid
           content security measures. Listing paths in the robots.txt file
-          exposes them publicly and thus makes the paths discoverable. </t>
+          exposes them publicly and thus makes the paths discoverable. To
+          control access to the URI paths in a robots.txt file, users of
+          the protocol should employ a valid security measure,
+          such as an IP address-based access control system. </t>
+      <t> To protect against attacks against their system, implementors
+          of robots.txt parsing and matching logic should take the
+          following considerations into account: </t>
+      <t>
+        <list style="symbols">
+          <t> Memory management: <xref target="limits" /> defines the lower
+              limit of bytes that must be processed, which inherently also
+              protects the parser from out of memory scenarios. </t>
+          <t> Invalid characters: <xref target="formal-syntax" /> defines
+              a set of characters that parsers and matchers can expect in
+              robots.txt files. Out of bound characters should be rejected
+              as invalid, which limits the available attack vectors that
+              attempt to compromise the system. </t>
+          <t> Untrusted content: Implementors should treat the content of
+              a robots.txt file as untrusted content, as defined by the
+              specification of the application layer used. For example,
+              in the context of HTTP, implementors should follow the
+              security considerations section of
+              <xref target="RFC9111"/>. </t>
+        </list>
+      </t>
+
     </section>
     <section anchor="IANA" title="IANA Considerations">
       <t> This document has no actions for IANA. </t>
