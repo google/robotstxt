@@ -13,7 +13,7 @@
   <!ENTITY RFC9111 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9111.xml">
 ]>
 
-<rfc ipr="trust200902" category="std" docName="draft-koster-rep-11" >
+<rfc ipr="trust200902" category="std" docName="draft-koster-rep-12" >
 
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
 
@@ -76,7 +76,7 @@
       </address>
     </author>
 
-    <date year="2022" month="June" day="28"/>
+    <date year="2022" month="July" day="06"/>
 
     <area>General</area>
 
@@ -372,8 +372,6 @@
 
       <figure>
         <artwork><![CDATA[
-          http://www.example.com/robots.txt
-
           https://www.example.com/robots.txt
 
           ftp://ftp.example.com/robots.txt
@@ -386,11 +384,12 @@
               crawler <bcp14>MUST</bcp14> follow the parseable rules. </t>
         </section>
         <section anchor="redirects" title="Redirects">
-          <t> The server may respond to a robots.txt fetch request with a
-              redirect, such as HTTP 301 and HTTP 302 in case of HTTP. The
-              crawlers <bcp14>SHOULD</bcp14> follow at least five consecutive
-              redirects, even across authorities (for example, hosts in case
-              of HTTP), as defined in <xref target="RFC1945"/>. </t>
+          <t> It's possible that a server responds to a robots.txt fetch
+              request with a redirect, such as HTTP 301 and HTTP 302 in
+              case of HTTP. The crawlers <bcp14>SHOULD</bcp14> follow at
+              least five consecutive redirects, even across authorities
+              (for example, hosts in case of HTTP), as defined in
+              <xref target="RFC1945"/>. </t>
           <t> If a robots.txt file is reached within five consecutive
               redirects, the robots.txt file <bcp14>MUST</bcp14> be fetched,
               parsed, and its rules followed in the context of the initial
@@ -430,16 +429,17 @@
       </section>
     </section>
       <section anchor="caching" title="Caching">
-      <t> Crawlers <bcp14>MAY</bcp14> cache the fetched robots.txt file&#39;s
+        <t> Crawlers <bcp14>MAY</bcp14> cache the fetched robots.txt file&#39;s
           contents. Crawlers <bcp14>MAY</bcp14> use standard cache control as
           defined in <xref target="RFC9111"/>. Crawlers
           <bcp14>SHOULD NOT</bcp14> use the cached version for more than 24
           hours, unless the robots.txt is unreachable. </t>
-    </section>
+      </section>
       <section anchor="limits" title="Limits">
-      <t> Crawlers <bcp14>SHOULD</bcp14> impose a parsing limit that
-      <bcp14>MUST</bcp14> be at least 500 kibibytes (KiB). </t>
-    </section>
+        <t> Crawlers SHOULD impose a parsing limit to protect their systems;
+          see <xref target="security"/>. The parsing limit MUST be at least
+          500 kibibytes <xref target="KiB"/>. </t>
+      </section>
     </section>
     <section anchor="security" title="Security Considerations">
       <t> The Robots Exclusion Protocol is not a substitute for more valid
@@ -559,7 +559,7 @@
       <reference anchor="ROBOTSTXT" target="http://www.robotstxt.org/">
         <front>
           <title>Robots Exclusion Protocol</title>
-          <author >
+          <author>
             <organization></organization>
           </author>
           <date year="n.d."/>
@@ -568,7 +568,16 @@
       <reference anchor="SITEMAPS" target="https://www.sitemaps.org/index.html">
         <front>
           <title>Sitemaps Protocol</title>
-          <author >
+          <author>
+            <organization></organization>
+          </author>
+          <date year="n.d."/>
+        </front>
+      </reference>
+      <reference anchor="KiB" target="https://simple.wikipedia.org/wiki/Kibibyte">
+        <front>
+          <title>Kibibyte - Simple English Wikipedia, the free encyclopedia</title>
+          <author>
             <organization></organization>
           </author>
           <date year="n.d."/>
