@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE rfc [
+  <!ENTITY nbsp    "&#160;">
+  <!ENTITY zwsp   "&#8203;">
+  <!ENTITY nbhy   "&#8209;">
+  <!ENTITY wj     "&#8288;">
+]>
+
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" ipr="trust200902" docName="draft-koster-rep-12" number="9309" obsoletes="" updates="" submissionType="IETF" category="std" consensus="true" xml:lang="en" tocInclude="true" tocDepth="4" symRefs="true" sortRefs="true" version="3">
+
+  <!-- xml2rfc v2v3 conversion 3.13.0 -->
+
+<front>
+    <title abbrev="Robots Exclusion Protocol (REP)">Robots Exclusion Protocol</title>
+    <seriesInfo name="RFC" value="9309"/>
+    <author initials="M." surname="Koster" fullname="Martijn Koster" role="editor">
+      <organization>Stalworthy Computing, Ltd.</organization>
+      <address>
+        <postal>
+          <street>Suton Lane</street>
+          <city>Wymondham, Norfolk</city>
+          <code>NR18 9JG</code>
+          <country>United Kingdom</country>
+        </postal>
+        <email>m.koster@greenhills.co.uk</email>
+      </address>
+    </author>
+    <author initials="G." surname="Illyes" fullname="Gary Illyes" role="editor">
+      <organization>Google LLC</organization>
+      <address>
+        <postal>
+          <street>Brandschenkestrasse 110</street>
+          <city>Zürich</city>
+          <code>8002</code>
+          <country>Switzerland</country>
+        </postal>
+        <email>garyillyes@google.com</email>
+      </address>
+    </author>
+    <author initials="H." surname="Zeller" fullname="Henner Zeller" role="editor">
+      <organization>Google LLC</organization>
+      <address>
+        <postal>
+          <street>1600 Amphitheatre Pkwy</street>
+          <city>Mountain View</city>
+          <region>CA</region>
+          <code>94043</code>
+          <country>United States of America</country>
+        </postal>
+        <email>henner@google.com</email>
+      </address>
+    </author>
+    <author initials="L." surname="Sassman" fullname="Lizzi Sassman" role="editor">
+      <organization>Google LLC</organization>
+      <address>
+        <postal>
+          <street>Brandschenkestrasse 110</street>
+          <city>Zürich</city>
+          <code>8002</code>
+          <country>Switzerland</country>
+        </postal>
+        <email>lizzi@google.com</email>
+      </address>
+    </author>
+    <date year="2022" month="August"/>
+    <keyword>robot</keyword>
+    <keyword>crawler</keyword>
+    <keyword>robots.txt</keyword>
+
+    <abstract>
+      <t> This document specifies and extends the "Robots Exclusion Protocol"
+          method originally defined by Martijn Koster in 1994 for service owners
+          to control how content served by their services may be accessed, if at
+          all, by automatic clients known as crawlers. Specifically, it adds
+          definition language for the protocol, instructions for handling
+          errors, and instructions for caching. </t>
+    </abstract>
+  </front>
+  <middle>
+    <section anchor="introduction" numbered="true" toc="default">
+      <name>Introduction</name>
+      <t> This document applies to services that provide resources that clients
+          can access through URIs as defined in <xref target="RFC3986" format="default"/>. For example,
+          in the context of HTTP, a browser is a client that displays the content of a
+          web page. </t>
+      <t> Crawlers are automated clients. Search engines, for instance, have crawlers to
+          recursively traverse links for indexing as defined in
+          <xref target="RFC8288" format="default"/>. </t>
+      <t> It may be inconvenient for service owners if crawlers visit the entirety of
+          their URI space. This document specifies the rules originally defined by
+          the "Robots Exclusion Protocol" <xref target="ROBOTSTXT" format="default"/> that crawlers
+          are requested to honor when accessing URIs. </t>
+      <t> These rules are not a form of access authorization. </t>
+      <section anchor="requirements-language" numbered="true" toc="default">
+        <name>Requirements Language</name>
+        <t>The key words "<bcp14>MUST</bcp14>", "<bcp14>MUST NOT</bcp14>",
+        "<bcp14>REQUIRED</bcp14>", "<bcp14>SHALL</bcp14>",
+        "<bcp14>SHALL NOT</bcp14>", "<bcp14>SHOULD</bcp14>",
+        "<bcp14>SHOULD NOT</bcp14>",
+        "<bcp14>RECOMMENDED</bcp14>", "<bcp14>NOT RECOMMENDED</bcp14>",
+        "<bcp14>MAY</bcp14>", and "<bcp14>OPTIONAL</bcp14>" in this document
+        are to be interpreted as described in BCP&nbsp;14
+        <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only
+        when, they appear in all capitals, as shown here.</t>
+      </section>
+    </section>
+    <section anchor="specification" numbered="true" toc="default">
+      <name>Specification</name>
+      <section anchor="protocol-definition" numbered="true" toc="default">
+        <name>Protocol Definition</name>
+        <t> The protocol language consists of rule(s) and group(s) that the service
+            makes available in a file named "robots.txt" as described in
+            <xref target="access-method" format="default"/>: </t>
+        <dl spacing="normal">
+          <dt> Rule:</dt><dd> A line with a key-value pair that defines how a
+                crawler may access URIs. See
+                <xref target="the-allow-and-disallow-lines" format="default"/>. </dd>
+          <dt> Group:</dt><dd> One or more user-agent lines that are followed by
+                one or more rules. The group is terminated by a user-agent line
+                or end of file. See <xref target="the-user-agent-line" format="default"/>.
+                The last group may have no rules, which means it implicitly
+                allows everything. </dd>
+        </dl>
+      </section>
+      <section anchor="formal-syntax" numbered="true" toc="default">
+        <name>Formal Syntax</name>
+        <t> Below is an Augmented Backus-Naur Form (ABNF) description, as described
+            in <xref target="RFC5234" format="default"/>. </t>
+<sourcecode name="" type="abnf"><![CDATA[
+ robotstxt = *(group / emptyline)
+ group = startgroupline                ; We start with a user-agent
+                                       ; line
+        *(startgroupline / emptyline)  ; ... and possibly more
+                                       ; user-agent lines
+        *(rule / emptyline)            ; followed by rules relevant
+                                       ; for the preceding
+                                       ; user-agent lines
+
+ startgroupline = *WS "user-agent" *WS ":" *WS product-token EOL
+
+ rule = *WS ("allow" / "disallow") *WS ":"
+       *WS (path-pattern / empty-pattern) EOL
+
+ ; parser implementors: define additional lines you need (for
+ ; example, Sitemaps).
+
+ product-token = identifier / "*"
+ path-pattern = "/" *UTF8-char-noctl ; valid URI path pattern
+ empty-pattern = *WS
+
+ identifier = 1*(%x2D / %x41-5A / %x5F / %x61-7A)
+ comment = "#" *(UTF8-char-noctl / WS / "#")
+ emptyline = EOL
+ EOL = *WS [comment] NL ; end-of-line may have
+                        ; optional trailing comment
+ NL = %x0D / %x0A / %x0D.0A
+ WS = %x20 / %x09
+
+ ; UTF8 derived from RFC 3629, but excluding control characters
+
+ UTF8-char-noctl = UTF8-1-noctl / UTF8-2 / UTF8-3 / UTF8-4
+ UTF8-1-noctl = %x21 / %x22 / %x24-7F ; excluding control, space, "#"
+ UTF8-2 = %xC2-DF UTF8-tail
+ UTF8-3 = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2UTF8-tail /
+          %xED %x80-9F UTF8-tail / %xEE-EF 2UTF8-tail
+ UTF8-4 = %xF0 %x90-BF 2UTF8-tail / %xF1-F3 3UTF8-tail /
+          %xF4 %x80-8F 2UTF8-tail
+
+ UTF8-tail = %x80-BF
+]]></sourcecode>
+    <section anchor="the-user-agent-line" numbered="true" toc="default">
+          <name>The User-Agent Line</name>
+          <t> Crawlers set their own name, which is called a product token, to find
+              relevant groups. The product token <bcp14>MUST</bcp14> contain only
+              uppercase and lowercase letters ("a-z" and "A-Z"),
+              underscores ("_"), and hyphens ("-").
+              The product token <bcp14>SHOULD</bcp14>
+              be a substring of the identification string that the crawler sends to
+              the service (for example, in the case of HTTP, the product token
+              <bcp14>SHOULD</bcp14> be a substring in the User-Agent header).
+              The identification string <bcp14>SHOULD</bcp14> describe the purpose of
+              the crawler. Here's an example of a User-Agent HTTP request header
+              with a link pointing to a page describing the purpose of the
+              ExampleBot crawler, which appears as a substring in the User-Agent HTTP
+              header and as a product token in the robots.txt user-agent line: </t>
+
+          <table align="center">
+            <name>Example of a User-Agent HTTP header and
+                  robots.txt user-agent line for the ExampleBot product token</name>
+            <thead>
+              <tr>
+                <th align="left">User-Agent HTTP header</th>
+                <th align="left">robots.txt user-agent line</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left">User-Agent: Mozilla/5.0 (compatible; ExampleBot/0.1; https://www.example.com/bot.html)</td>
+                <td align="left">user-agent: ExampleBot</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <t> Note that the product token (ExampleBot) is a substring of
+            the User-Agent HTTP header.</t>
+          <t> Crawlers <bcp14>MUST</bcp14> use case-insensitive matching
+              to find the group that matches the product token and then
+              obey the rules of the group. If there is more than one
+              group matching the user-agent, the matching groups' rules
+              <bcp14>MUST</bcp14> be combined into one group and parsed
+              according to
+              <xref target="the-allow-and-disallow-lines" format="default"/>.</t>
+
+          <table align="center">
+            <name>Example of how to merge two robots.txt
+                  groups that match the same product token</name>
+            <thead>
+              <tr>
+                <th align="left">Two groups that match the same product token exactly</th>
+                <th align="left">Merged group</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left">user-agent: ExampleBot<br/>
+              disallow: /foo<br/>
+              disallow: /bar<br/>
+                  <br/>
+              user-agent: ExampleBot<br/>
+              disallow: /baz<br/>
+            </td>
+                <td align="left">user-agent: ExampleBot<br/>
+              disallow: /foo<br/>
+              disallow: /bar<br/>
+              disallow: /baz<br/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <t> If no matching group exists, crawlers <bcp14>MUST</bcp14> obey the group
+              with a user-agent line with the "*" value, if present. </t>
+          <table align="center">
+            <name>Example of no matching groups other than the "*"
+                  for the ExampleBot product token</name>
+            <thead>
+              <tr>
+                <th align="left">Two groups that don't explicitly match ExampleBot</th>
+                <th align="left">Applicable group for ExampleBot</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left">user-agent: *<br/>
+              disallow: /foo<br/>
+              disallow: /bar<br/>
+                  <br/>
+              user-agent: BazBot<br/>
+              disallow: /baz<br/>
+            </td>
+                <td align="left">user-agent: *<br/>
+              disallow: /foo<br/>
+              disallow: /bar</td>
+              </tr>
+            </tbody>
+          </table>
+          <t> If no group matches the product token and there is no group with a user-agent
+              line with the "*" value, or no groups are present at all, no
+              rules apply. </t>
+        </section>
+        <section anchor="the-allow-and-disallow-lines" numbered="true" toc="default">
+          <name>The &quot;Allow&quot; and &quot;Disallow&quot; Lines</name>
+          <t> These lines indicate whether accessing a URI that matches the
+              corresponding path is allowed or disallowed. </t>
+          <t> To evaluate if access to a URI is allowed, a crawler <bcp14>MUST</bcp14>
+              match the paths in "allow" and "disallow" rules against the URI.
+              The matching <bcp14>SHOULD</bcp14> be case sensitive. The matching
+              <bcp14>MUST</bcp14> start with the first octet of the path. The most
+              specific match found <bcp14>MUST</bcp14> be used. The most specific
+              match is the match that has the most octets. Duplicate rules in a
+              group <bcp14>MAY</bcp14> be deduplicated. If an "allow" rule and a "disallow"
+              rule are equivalent, then the "allow" rule <bcp14>SHOULD</bcp14> be used. If no
+              match is found amongst the rules in a group for a matching user-agent
+              or there are no rules in the group, the URI is allowed. The
+              /robots.txt URI is implicitly allowed. </t>
+          <t> Octets in the URI and robots.txt paths outside the range of the
+              ASCII coded character set, and those in the reserved range defined
+              by <xref target="RFC3986" format="default"/>, <bcp14>MUST</bcp14> be percent-encoded as
+              defined by <xref target="RFC3986" format="default"/> prior to comparison. </t>
+          <t> If a percent-encoded ASCII octet is encountered in the URI, it
+              <bcp14>MUST</bcp14> be unencoded prior to comparison, unless it is a
+              reserved character in the URI as defined by <xref target="RFC3986" format="default"/>
+              or the character is outside the unreserved character range. The match
+              evaluates positively if and only if the end of the path from the rule
+              is reached before a difference in octets is encountered. </t>
+          <t> For example: </t>
+
+
+          <table align="center">
+            <name>Examples of matching percent-encoded URI components</name>
+            <thead>
+              <tr>
+                <th align="left">Path</th>
+                <th align="left">Encoded Path</th>
+                <th align="left">Path to Match</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left">/foo/bar?baz=quz</td>
+                <td align="left">/foo/bar?baz=quz</td>
+                <td align="left">/foo/bar?baz=quz</td>
+              </tr>
+              <tr>
+                <td align="left">/foo/bar?baz=<br/>https://foo.bar</td>
+                <td align="left">/foo/bar?baz=<br/>https%3A%2F%2Ffoo.bar</td>
+                <td align="left">/foo/bar?baz=<br/>https%3A%2F%2Ffoo.bar</td>
+              </tr>
+              <tr>
+                <td align="left">/foo/bar/U+E38384</td>
+                <td align="left">/foo/bar/%E3%83%84</td>
+                <td align="left">/foo/bar/%E3%83%84</td>
+              </tr>
+              <tr>
+                <td align="left">/foo/bar/%E3%83%84</td>
+                <td align="left">/foo/bar/%E3%83%84</td>
+                <td align="left">/foo/bar/%E3%83%84</td>
+              </tr>
+              <tr>
+                <td align="left">/foo/bar/%62%61%7A</td>
+                <td align="left">/foo/bar/%62%61%7A</td>
+                <td align="left">/foo/bar/baz</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <t> The crawler <bcp14>SHOULD</bcp14> ignore "disallow" and
+              "allow" rules that are not in any group (for example, any
+              rule that precedes the first user-agent line). </t>
+          <t> Implementors <bcp14>MAY</bcp14> bridge encoding mismatches if they
+              detect that the robots.txt file is not UTF-8 encoded. </t>
+        </section>
+        <section anchor="special-characters" numbered="true" toc="default">
+          <name>Special Characters</name>
+          <t> Crawlers <bcp14>MUST</bcp14> support the following special characters: </t>
+          <table align="center">
+            <name>List of special characters in robots.txt files</name>
+            <thead>
+              <tr>
+                <th align="left">Character</th>
+                <th align="left">Description</th>
+                <th align="left">Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left">"#"</td>
+                <td align="left">Designates a line comment.</td>
+                <td align="left">"allow: / # comment in line"<br/><br/>"# comment on its own line"</td>
+              </tr>
+              <tr>
+                <td align="left">"$"</td>
+                <td align="left">Designates the end of the match pattern.</td>
+                <td align="left">"allow: /this/path/exactly$"</td>
+              </tr>
+              <tr>
+                <td align="left">"*"</td>
+                <td align="left">Designates 0 or more instances of any character.</td>
+                <td align="left">"allow: /this/*/exactly"</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <t> If crawlers match special characters verbatim in the URI, crawlers
+              <bcp14>SHOULD</bcp14> use "%" encoding. For example: </t>
+          <table align="center">
+            <name>Example of percent-encoding</name>
+            <thead>
+              <tr>
+                <th align="left">Percent-encoded Pattern</th>
+                <th align="left">URI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left">/path/file-with-a-%2A.html</td>
+                <td align="left">https://www.example.com/path/file-with-a-*.html</td>
+              </tr>
+              <tr>
+                <td align="left">/path/foo-%24</td>
+                <td align="left">https://www.example.com/path/foo-$</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section anchor="other-records" numbered="true" toc="default">
+          <name>Other Records</name>
+          <t> Crawlers <bcp14>MAY</bcp14> interpret other records that are not
+              part of the robots.txt protocol -- for example, "Sitemaps"
+              <xref target="SITEMAPS" format="default"/>. Crawlers <bcp14>MAY</bcp14> be lenient when
+              interpreting other records. For example, crawlers may accept
+              common misspellings of the record. </t>
+          <t> Parsing of other records
+              <bcp14>MUST NOT</bcp14> interfere with the parsing of explicitly
+              defined records in <xref target="specification" format="default"/>.
+              For example, a "Sitemaps" record <bcp14>MUST NOT</bcp14> terminate a
+              group. </t>
+        </section>
+      </section>
+      <section anchor="access-method" numbered="true" toc="default">
+        <name>Access Method</name>
+        <t> The rules <bcp14>MUST</bcp14> be accessible in a file named
+          "/robots.txt" (all lowercase) in the top-level path of
+          the service. The file <bcp14>MUST</bcp14> be UTF-8 encoded (as
+          defined in <xref target="RFC3629" format="default"/>) and Internet Media Type
+          "text/plain"
+          (as defined in <xref target="RFC2046" format="default"/>). </t>
+        <t> As per <xref target="RFC3986" format="default"/>, the URI of the robots.txt file is: </t>
+        <t> "scheme:[//authority]/robots.txt" </t>
+        <t> For example, in the context of HTTP or FTP, the URI is: </t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+          https://www.example.com/robots.txt
+
+          ftp://ftp.example.com/robots.txt
+          ]]></artwork>
+        <section anchor="access-results" numbered="true" toc="default">
+          <name>Access Results</name>
+          <section anchor="successful-access" numbered="true" toc="default">
+            <name>Successful Access</name>
+            <t> If the crawler successfully downloads the robots.txt file, the
+              crawler <bcp14>MUST</bcp14> follow the parseable rules. </t>
+          </section>
+          <section anchor="redirects" numbered="true" toc="default">
+            <name>Redirects</name>
+            <t> It's possible that a server responds to a robots.txt fetch
+              request with a redirect, such as HTTP 301 or HTTP 302 in the
+              case of HTTP. The crawlers <bcp14>SHOULD</bcp14> follow at
+              least five consecutive redirects, even across authorities
+              (for example, hosts in the case of HTTP). </t>
+            <t> If a robots.txt file is reached within five consecutive
+              redirects, the robots.txt file <bcp14>MUST</bcp14> be fetched,
+              parsed, and its rules followed in the context of the initial
+              authority. </t>
+            <t> If there are more than five consecutive redirects, crawlers
+              <bcp14>MAY</bcp14> assume that the robots.txt file is
+              unavailable. </t>
+          </section>
+          <section anchor="unavailable-status" numbered="true" toc="default">
+            <name>&quot;Unavailable&quot; Status</name>
+            <t> "Unavailable" means the crawler tries to fetch the robots.txt file
+              and the server responds with status codes indicating that the resource in question is unavailable. For
+              example, in the context of HTTP, such status codes are
+              in the 400-499 range. </t>
+            <t> If a server status code indicates that the robots.txt file is
+              unavailable to the crawler, then the crawler <bcp14>MAY</bcp14> access any
+              resources on the server. </t>
+          </section>
+          <section anchor="unreachable-status" numbered="true" toc="default">
+            <name>&quot;Unreachable&quot; Status</name>
+            <t> If the robots.txt file is unreachable due to server or network
+              errors, this means the robots.txt file is undefined and the crawler
+              <bcp14>MUST</bcp14> assume complete disallow. For example, in
+              the context of HTTP, server errors are identified by status codes
+              in the 500-599 range. </t>
+            <t> If the robots.txt file is undefined for a reasonably long period of
+              time (for example, 30 days), crawlers <bcp14>MAY</bcp14> assume that
+              the robots.txt file is unavailable as defined in
+              <xref target="unavailable-status" format="default"/> or continue to use a cached
+              copy. </t>
+          </section>
+          <section anchor="parsing-errors" numbered="true" toc="default">
+            <name>Parsing Errors</name>
+            <t> Crawlers <bcp14>MUST</bcp14> try to parse each line of the
+              robots.txt file. Crawlers <bcp14>MUST</bcp14> use the parseable
+              rules. </t>
+          </section>
+        </section>
+      </section>
+      <section anchor="caching" numbered="true" toc="default">
+        <name>Caching</name>
+        <t> Crawlers <bcp14>MAY</bcp14> cache the fetched robots.txt file's
+          contents. Crawlers <bcp14>MAY</bcp14> use standard cache control as
+          defined in <xref target="RFC9111" format="default"/>. Crawlers
+          <bcp14>SHOULD NOT</bcp14> use the cached version for more than 24
+          hours, unless the robots.txt file is unreachable. </t>
+      </section>
+      <section anchor="limits" numbered="true" toc="default">
+        <name>Limits</name>
+        <t> Crawlers <bcp14>SHOULD</bcp14> impose a parsing limit to protect their systems;
+          see <xref target="security" format="default"/>. The parsing limit <bcp14>MUST</bcp14> be at least
+          500 kibibytes <xref target="KiB" format="default"/>. </t>
+      </section>
+    </section>
+    <section anchor="security" numbered="true" toc="default">
+      <name>Security Considerations</name>
+      <t> The Robots Exclusion Protocol is not a substitute for more valid
+          content security measures. Listing paths in the robots.txt file
+          exposes them publicly and thus makes the paths discoverable. To
+          control access to the URI paths in a robots.txt file, users of
+          the protocol should employ a valid security measure relevant to
+          the application layer on which the robots.txt file is served --
+          for example, in the case of HTTP, HTTP Authentication as defined in
+          <xref target="RFC9110" format="default"/>. </t>
+      <t> To protect against attacks against their system, implementors
+          of robots.txt parsing and matching logic should take the
+          following considerations into account: </t>
+      <dl spacing="normal">
+        <dt> Memory management:</dt><dd> <xref target="limits" format="default"/> defines the lower
+              limit of bytes that must be processed, which inherently also
+              protects the parser from out-of-memory scenarios. </dd>
+        <dt> Invalid characters:</dt><dd> <xref target="formal-syntax" format="default"/> defines
+              a set of characters that parsers and matchers can expect in
+              robots.txt files. Out-of-bound characters should be rejected
+              as invalid, which limits the available attack vectors that
+              attempt to compromise the system. </dd>
+        <dt> Untrusted content:</dt><dd> Implementors should treat the content of
+              a robots.txt file as untrusted content, as defined by the
+              specification of the application layer used. For example,
+              in the context of HTTP, implementors should follow the
+              Security Considerations section of
+              <xref target="RFC9110" format="default"/>. </dd>
+      </dl>
+    </section>
+    <section anchor="IANA" numbered="true" toc="default">
+      <name>IANA Considerations</name>
+      <t> This document has no IANA actions. </t>
+    </section>
+    <section anchor="examples" numbered="true" toc="default">
+      <name>Examples</name>
+      <section anchor="simple-example" numbered="true" toc="default">
+        <name>Simple Example</name>
+        <t> The following example shows: </t>
+        <dl spacing="normal">
+          <dt> *:</dt><dd> A group that's relevant to all user agents that
+                don't have an explicitly defined matching group. It allows
+                access to the URLs with the /publications/ path prefix, and it
+                restricts access to the URLs with the /example/ path prefix
+                and to all URLs with a .gif suffix. The "*" character designates
+                any character, including the otherwise-required forward
+                slash; see <xref target="formal-syntax" format="default"/>. </dd>
+          <dt> foobot:</dt><dd> A regular case. A single user agent followed
+                by rules. The crawler only has access to two URL path
+                prefixes on the site -- /example/page.html and
+                /example/allowed.gif. The rules of the group are missing
+                the optional space character, which is acceptable as
+                defined in <xref target="formal-syntax" format="default"/>. </dd>
+          <dt> barbot and bazbot:</dt><dd> A group that's relevant for more
+                than one user agent. The crawlers are not allowed to access
+                the URLs with the /example/page.html path prefix but
+                otherwise have unrestricted access to the rest of the URLs
+                on the site. </dd>
+          <dt> quxbot:</dt><dd> An empty group at the end of the file. The crawler has
+                unrestricted access to the URLs on the site. </dd>
+        </dl>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+            User-Agent: *
+            Disallow: *.gif$
+            Disallow: /example/
+            Allow: /publications/
+
+            User-Agent: foobot
+            Disallow:/
+            Allow:/example/page.html
+            Allow:/example/allowed.gif
+
+            User-Agent: barbot
+            User-Agent: bazbot
+            Disallow: /example/page.html
+
+            User-Agent: quxbot
+
+            EOF
+          ]]></artwork>
+      </section>
+      <section anchor="longest-match" numbered="true" toc="default">
+        <name>Longest Match</name>
+        <t> The following example shows that in the case of two rules, the
+            longest one is used for matching. In the following case,
+            /example/page/disallowed.gif <bcp14>MUST</bcp14> be used for
+            the URI example.com/example/page/disallow.gif. </t>
+        <artwork name="" type="" align="left" alt=""><![CDATA[
+            User-Agent: foobot
+            Allow: /example/page/
+            Disallow: /example/page/disallowed.gif
+          ]]></artwork>
+      </section>
+    </section>
+  </middle>
+  <back>
+    <references>
+      <name>References</name>
+      <references>
+        <name>Normative References</name>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2046.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.3629.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.3986.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5234.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9110.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.9111.xml"/>
+      </references>
+      <references>
+        <name>Informative References</name>
+
+        <reference anchor="ROBOTSTXT" target="https://www.robotstxt.org/">
+          <front>
+            <title>The Web Robots Pages (including /robots.txt)</title>
+            <author>
+              <organization/>
+            </author>
+            <date>2007</date>
+          </front>
+        </reference>
+        <reference anchor="SITEMAPS" target="https://www.sitemaps.org/index.html">
+          <front>
+            <title>What are Sitemaps? (Sitemap protocol)</title>
+            <author>
+              <organization/>
+            </author>
+            <date>April 2020</date>
+          </front>
+        </reference>
+        <reference anchor="KiB" target="https://simple.wikipedia.org/wiki/Kibibyte">
+          <front>
+            <title>Kibibyte</title>
+            <author>
+              <organization/>
+            </author>
+            <date day="17" month="September" year="2020"/>
+          </front>
+          <refcontent>Simple English Wikipedia, the free encyclopedia</refcontent>
+        </reference>
+      </references>
+    </references>
+  </back>
+</rfc>
