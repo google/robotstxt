@@ -15,7 +15,6 @@
     <title abbrev="Robots Exclusion Protocol (REP)">Robots Exclusion Protocol</title>
     <seriesInfo name="RFC" value="9309"/>
     <author initials="M." surname="Koster" fullname="Martijn Koster" role="editor">
-      <organization>Stalworthy Computing, Ltd.</organization>
       <address>
         <postal>
           <street>Suton Lane</street>
