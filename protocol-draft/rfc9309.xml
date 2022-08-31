@@ -492,7 +492,7 @@
     </section>
     <section anchor="security" numbered="true" toc="default">
       <name>Security Considerations</name>
-      <t> The Robots Exclusion Protocol is not a substitute for more valid
+      <t> The Robots Exclusion Protocol is not a substitute for valid
           content security measures. Listing paths in the robots.txt file
           exposes them publicly and thus makes the paths discoverable. To
           control access to the URI paths in a robots.txt file, users of
