@@ -176,8 +176,9 @@
               underscores ("_"), and hyphens ("-").
               The product token <bcp14>SHOULD</bcp14>
               be a substring of the identification string that the crawler sends to
-              the service (for example, in the case of HTTP, the product token
-              <bcp14>SHOULD</bcp14> be a substring in the User-Agent header).
+              the service. For example, in the case of HTTP
+              <xref target="RFC9110" format="default"/>, the product token
+              <bcp14>SHOULD</bcp14> be a substring in the User-Agent header.
               The identification string <bcp14>SHOULD</bcp14> describe the purpose of
               the crawler. Here's an example of a User-Agent HTTP request header
               with a link pointing to a page describing the purpose of the
