@@ -62,7 +62,7 @@
         <email>lizzi@google.com</email>
       </address>
     </author>
-    <date year="2022" month="August"/>
+    <date year="2022" month="September"/>
     <keyword>robot</keyword>
     <keyword>crawler</keyword>
     <keyword>robots.txt</keyword>
@@ -185,22 +185,20 @@
               ExampleBot crawler, which appears as a substring in the User-Agent HTTP
               header and as a product token in the robots.txt user-agent line: </t>
 
-          <table align="center">
+          <figure anchor="fig-1">
             <name>Example of a User-Agent HTTP header and
                   robots.txt user-agent line for the ExampleBot product token</name>
-            <thead>
-              <tr>
-                <th align="left">User-Agent HTTP header</th>
-                <th align="left">robots.txt user-agent line</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td align="left">User-Agent: Mozilla/5.0 (compatible; ExampleBot/0.1; https://www.example.com/bot.html)</td>
-                <td align="left">user-agent: ExampleBot</td>
-              </tr>
-            </tbody>
-          </table>
+<artwork name="" type="" align="center" alt=""><![CDATA[
++==========================================+========================+
+| User-Agent HTTP header                   | robots.txt user-agent  |
+|                                          | line                   |
++==========================================+========================+
+| User-Agent: Mozilla/5.0 (compatible;     | user-agent: ExampleBot |
+| ExampleBot/0.1;                          |                        |
+| https://www.example.com/bot.html)        |                        |
++------------------------------------------+------------------------+
+]]></artwork>
+</figure>
 
           <t> Note that the product token (ExampleBot) is a substring of
             the User-Agent HTTP header.</t>
@@ -212,58 +210,42 @@
               according to
               <xref target="the-allow-and-disallow-lines" format="default"/>.</t>
 
-          <table align="center">
+          <figure anchor="fig-2">
             <name>Example of how to merge two robots.txt
                   groups that match the same product token</name>
-            <thead>
-              <tr>
-                <th align="left">Two groups that match the same product token exactly</th>
-                <th align="left">Merged group</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td align="left">user-agent: ExampleBot<br/>
-              disallow: /foo<br/>
-              disallow: /bar<br/>
-                  <br/>
-              user-agent: ExampleBot<br/>
-              disallow: /baz<br/>
-            </td>
-                <td align="left">user-agent: ExampleBot<br/>
-              disallow: /foo<br/>
-              disallow: /bar<br/>
-              disallow: /baz<br/>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+<artwork name="" type="" align="center" alt=""><![CDATA[
++========================================+========================+
+| Two groups that match the same product | Merged group           |
+| token exactly                          |                        |
++========================================+========================+
+| user-agent: ExampleBot                 | user-agent: ExampleBot |
+| disallow: /foo                         | disallow: /foo         |
+| disallow: /bar                         | disallow: /bar         |
+|                                        | disallow: /baz         |
+| user-agent: ExampleBot                 |                        |
+| disallow: /baz                         |                        |
++----------------------------------------+------------------------+
+]]></artwork>
+</figure>
           <t> If no matching group exists, crawlers <bcp14>MUST</bcp14> obey the group
               with a user-agent line with the "*" value, if present. </t>
-          <table align="center">
+          <figure anchor="fig-3">
             <name>Example of no matching groups other than the "*"
                   for the ExampleBot product token</name>
-            <thead>
-              <tr>
-                <th align="left">Two groups that don't explicitly match ExampleBot</th>
-                <th align="left">Applicable group for ExampleBot</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td align="left">user-agent: *<br/>
-              disallow: /foo<br/>
-              disallow: /bar<br/>
-                  <br/>
-              user-agent: BazBot<br/>
-              disallow: /baz<br/>
-            </td>
-                <td align="left">user-agent: *<br/>
-              disallow: /foo<br/>
-              disallow: /bar</td>
-              </tr>
-            </tbody>
-          </table>
+<artwork name="" type="" align="center" alt=""><![CDATA[
++==================================+======================+
+| Two groups that don't explicitly | Applicable group for |
+| match ExampleBot                 | ExampleBot           |
++==================================+======================+
+| user-agent: *                    | user-agent: *        |
+| disallow: /foo                   | disallow: /foo       |
+| disallow: /bar                   | disallow: /bar       |
+|                                  |                      |
+| user-agent: BazBot               |                      |
+| disallow: /baz                   |                      |
++----------------------------------+----------------------+
+]]></artwork>
+</figure>
           <t> If no group matches the product token and there is no group with a user-agent
               line with the "*" value, or no groups are present at all, no
               rules apply. </t>
@@ -295,44 +277,28 @@
               is reached before a difference in octets is encountered. </t>
           <t> For example: </t>
 
-
-          <table align="center">
+          <figure anchor="fig-4">
             <name>Examples of matching percent-encoded URI components</name>
-            <thead>
-              <tr>
-                <th align="left">Path</th>
-                <th align="left">Encoded Path</th>
-                <th align="left">Path to Match</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td align="left">/foo/bar?baz=quz</td>
-                <td align="left">/foo/bar?baz=quz</td>
-                <td align="left">/foo/bar?baz=quz</td>
-              </tr>
-              <tr>
-                <td align="left">/foo/bar?baz=<br/>https://foo.bar</td>
-                <td align="left">/foo/bar?baz=<br/>https%3A%2F%2Ffoo.bar</td>
-                <td align="left">/foo/bar?baz=<br/>https%3A%2F%2Ffoo.bar</td>
-              </tr>
-              <tr>
-                <td align="left">/foo/bar/U+E38384</td>
-                <td align="left">/foo/bar/%E3%83%84</td>
-                <td align="left">/foo/bar/%E3%83%84</td>
-              </tr>
-              <tr>
-                <td align="left">/foo/bar/%E3%83%84</td>
-                <td align="left">/foo/bar/%E3%83%84</td>
-                <td align="left">/foo/bar/%E3%83%84</td>
-              </tr>
-              <tr>
-                <td align="left">/foo/bar/%62%61%7A</td>
-                <td align="left">/foo/bar/%62%61%7A</td>
-                <td align="left">/foo/bar/baz</td>
-              </tr>
-            </tbody>
-          </table>
+<artwork name="" type="" align="center" alt=""><![CDATA[
++==================+=======================+=======================+
+| Path             | Encoded Path          | Path to Match         |
++==================+=======================+=======================+
+| /foo/bar?baz=quz | /foo/bar?baz=quz      | /foo/bar?baz=quz      |
++------------------+-----------------------+-----------------------+
+| /foo/bar?baz=    | /foo/bar?baz=         | /foo/bar?baz=         |
+| https://foo.bar  | https%3A%2F%2Ffoo.bar | https%3A%2F%2Ffoo.bar |
++------------------+-----------------------+-----------------------+
+| /foo/bar/        | /foo/bar/%E3%83%84    | /foo/bar/%E3%83%84    |
+| U+E38384         |                       |                       |
++------------------+-----------------------+-----------------------+
+| /foo/            | /foo/bar/%E3%83%84    | /foo/bar/%E3%83%84    |
+| bar/%E3%83%84    |                       |                       |
++------------------+-----------------------+-----------------------+
+| /foo/            | /foo/bar/%62%61%7A    | /foo/bar/baz          |
+| bar/%62%61%7A    |                       |                       |
++------------------+-----------------------+-----------------------+
+]]></artwork>
+</figure>
 
           <t> The crawler <bcp14>SHOULD</bcp14> ignore "disallow" and
               "allow" rules that are not in any group (for example, any
@@ -343,55 +309,42 @@
         <section anchor="special-characters" numbered="true" toc="default">
           <name>Special Characters</name>
           <t> Crawlers <bcp14>MUST</bcp14> support the following special characters: </t>
-          <table align="center">
+          <figure anchor="fig-5">
             <name>List of special characters in robots.txt files</name>
-            <thead>
-              <tr>
-                <th align="left">Character</th>
-                <th align="left">Description</th>
-                <th align="left">Example</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td align="left">"#"</td>
-                <td align="left">Designates a line comment.</td>
-                <td align="left">"allow: / # comment in line"<br/><br/>"# comment on its own line"</td>
-              </tr>
-              <tr>
-                <td align="left">"$"</td>
-                <td align="left">Designates the end of the match pattern.</td>
-                <td align="left">"allow: /this/path/exactly$"</td>
-              </tr>
-              <tr>
-                <td align="left">"*"</td>
-                <td align="left">Designates 0 or more instances of any character.</td>
-                <td align="left">"allow: /this/*/exactly"</td>
-              </tr>
-            </tbody>
-          </table>
+<artwork name="" type="" align="center" alt=""><![CDATA[
++===========+===================+==============================+
+| Character | Description       | Example                      |
++===========+===================+==============================+
+| #       | Designates a line | allow: / # comment in line   |
+|           | comment.          |                              |
+|           |                   | # comment on its own line    |
++-----------+-------------------+------------------------------+
+| "$"       | Designates the    | allow: /this/path/exactly$   |
+|           | end of the match  |                              |
+|           | pattern.          |                              |
++-----------+-------------------+------------------------------+
+| "*"       | Designates 0 or   | allow: /this/*/exactly       |
+|           | more instances of |                              |
+|           | any character.    |                              |
++-----------+-------------------+------------------------------+
+]]></artwork>
+</figure>
 
           <t> If crawlers match special characters verbatim in the URI, crawlers
               <bcp14>SHOULD</bcp14> use "%" encoding. For example: </t>
-          <table align="center">
+          <figure anchor="fig-6">
             <name>Example of percent-encoding</name>
-            <thead>
-              <tr>
-                <th align="left">Percent-encoded Pattern</th>
-                <th align="left">URI</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td align="left">/path/file-with-a-%2A.html</td>
-                <td align="left">https://www.example.com/path/file-with-a-*.html</td>
-              </tr>
-              <tr>
-                <td align="left">/path/foo-%24</td>
-                <td align="left">https://www.example.com/path/foo-$</td>
-              </tr>
-            </tbody>
-          </table>
+<artwork name="" type="" align="center" alt=""><![CDATA[
++============================+====================================+
+| Percent-encoded Pattern    | URI                                |
++============================+====================================+
+| /path/file-with-a-%2A.html | https://www.example.com/path/      |
+|                            | file-with-a-*.html                 |
++----------------------------+------------------------------------+
+| /path/foo-%24              | https://www.example.com/path/foo-$ |
++----------------------------+------------------------------------+
+]]></artwork>
+</figure>
         </section>
         <section anchor="other-records" numbered="true" toc="default">
           <name>Other Records</name>
