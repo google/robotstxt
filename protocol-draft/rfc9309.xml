@@ -315,15 +315,15 @@
 +===========+===================+==============================+
 | Character | Description       | Example                      |
 +===========+===================+==============================+
-| #       | Designates a line | allow: / # comment in line   |
+| #         | Designates a line | allow: / # comment in line   |
 |           | comment.          |                              |
 |           |                   | # comment on its own line    |
 +-----------+-------------------+------------------------------+
-| "$"       | Designates the    | allow: /this/path/exactly$   |
+| $         | Designates the    | allow: /this/path/exactly$   |
 |           | end of the match  |                              |
 |           | pattern.          |                              |
 +-----------+-------------------+------------------------------+
-| "*"       | Designates 0 or   | allow: /this/*/exactly       |
+| *         | Designates 0 or   | allow: /this/*/exactly       |
 |           | more instances of |                              |
 |           | any character.    |                              |
 +-----------+-------------------+------------------------------+
