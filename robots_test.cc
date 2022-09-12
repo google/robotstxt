@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 // This file tests the robots.txt parsing and matching code found in robots.cc
-// against the current Robots Exclusion Protocol (REP) internet draft (I-D).
-// https://tools.ietf.org/html/draft-koster-rep
+// against the current Robots Exclusion Protocol (REP) RFC.
+// https://www.rfc-editor.org/rfc/rfc9309.html
 #include "robots.h"
 
 #include <string>
@@ -56,8 +56,8 @@ TEST(RobotsUnittest, GoogleOnly_SystemTest) {
 //     user-agent: <value>
 //     allow: <value>
 //     disallow: <value>
-// See REP I-D section "Protocol Definition".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.1
+// See REP RFC section "Protocol Definition".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.1
 //
 // Google specific: webmasters sometimes miss the colon separator, but it's
 // obvious what they mean by "disallow /", so we assume the colon if it's
@@ -82,8 +82,8 @@ TEST(RobotsUnittest, ID_LineSyntax_Line) {
 // A group is one or more user-agent line followed by rules, and terminated
 // by a another user-agent line. Rules for same user-agents are combined
 // opaquely into one group. Rules outside groups are ignored.
-// See REP I-D section "Protocol Definition".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.1
+// See REP RFC section "Protocol Definition".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.1
 TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   const absl::string_view robotstxt =
       "allow: /foo/bar/\n"
@@ -123,9 +123,9 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups) {
   EXPECT_FALSE(IsUserAgentAllowed(robotstxt, "BazBot", url_foo));
 }
 
-// Group must not be closed by rules not explicitly defined in the REP I-D.
-// See REP I-D section "Protocol Definition".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.1
+// Group must not be closed by rules not explicitly defined in the REP RFC.
+// See REP RFC section "Protocol Definition".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.1
 TEST(RobotsUnittest, ID_LineSyntax_Groups_OtherRules) {
   {
     const absl::string_view robotstxt =
@@ -149,8 +149,8 @@ TEST(RobotsUnittest, ID_LineSyntax_Groups_OtherRules) {
   }
 }
 
-// REP lines are case insensitive. See REP I-D section "Protocol Definition".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.1
+// REP lines are case insensitive. See REP RFC section "Protocol Definition".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.1
 TEST(RobotsUnittest, ID_REPLineNamesCaseInsensitive) {
   const absl::string_view robotstxt_upper =
       "USER-AGENT: FooBot\n"
@@ -176,8 +176,8 @@ TEST(RobotsUnittest, ID_REPLineNamesCaseInsensitive) {
 }
 
 // A user-agent line is expected to contain only [a-zA-Z_-] characters and must
-// not be empty. See REP I-D section "The user-agent line".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
+// not be empty. See REP RFC section "The user-agent line".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.1
 TEST(RobotsUnittest, ID_VerifyValidUserAgentsToObey) {
   EXPECT_TRUE(RobotsMatcher::IsValidUserAgentToObey("Foobot"));
   EXPECT_TRUE(RobotsMatcher::IsValidUserAgentToObey("Foobot-Bar"));
@@ -194,9 +194,9 @@ TEST(RobotsUnittest, ID_VerifyValidUserAgentsToObey) {
   EXPECT_FALSE(RobotsMatcher::IsValidUserAgentToObey("Foobot Bar"));
 }
 
-// User-agent line values are case insensitive. See REP I-D section "The
+// User-agent line values are case insensitive. See REP RFC section "The
 // user-agent line".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.1
 TEST(RobotsUnittest, ID_UserAgentValueCaseInsensitive) {
   const absl::string_view robotstxt_upper =
       "User-Agent: FOO BAR\n"
@@ -229,10 +229,10 @@ TEST(RobotsUnittest, ID_UserAgentValueCaseInsensitive) {
 
 // Google specific: accept user-agent value up to the first space. Space is not
 // allowed in user-agent values, but that doesn't stop webmasters from using
-// them. This is more restrictive than the I-D, since in case of the bad value
+// them. This is more restrictive than the RFC, since in case of the bad value
 // "Googlebot Images" we'd still obey the rules with "Googlebot".
-// Extends REP I-D section "The user-agent line"
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
+// Extends REP RFC section "The user-agent line"
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.1
 TEST(RobotsUnittest, GoogleOnly_AcceptUserAgentUpToFirstSpace) {
   EXPECT_FALSE(RobotsMatcher::IsValidUserAgentToObey("Foobot Bar"));
   const absl::string_view robotstxt =
@@ -250,8 +250,8 @@ TEST(RobotsUnittest, GoogleOnly_AcceptUserAgentUpToFirstSpace) {
 // If no group matches the user-agent, crawlers must obey the first group with a
 // user-agent line with a "*" value, if present. If no group satisfies either
 // condition, or no groups are present at all, no rules apply.
-// See REP I-D section "The user-agent line".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.1
+// See REP RFC section "The user-agent line".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.1
 TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
   const absl::string_view robotstxt_empty = "";
   const absl::string_view robotstxt_global =
@@ -275,8 +275,8 @@ TEST(RobotsUnittest, ID_GlobalGroups_Secondary) {
 }
 
 // Matching rules against URIs is case sensitive.
-// See REP I-D section "The Allow and Disallow lines".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.2
+// See REP RFC section "The Allow and Disallow lines".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.2
 TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
   const absl::string_view robotstxt_lowercase_url =
       "user-agent: FooBot\n"
@@ -293,8 +293,8 @@ TEST(RobotsUnittest, ID_AllowDisallow_Value_CaseSensitive) {
 // The most specific match found MUST be used. The most specific match is the
 // match that has the most octets. In case of multiple rules with the same
 // length, the least strict rule must be used.
-// See REP I-D section "The Allow and Disallow lines".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.2
+// See REP RFC section "The Allow and Disallow lines".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.2
 TEST(RobotsUnittest, ID_LongestMatch) {
   const std::string url = "http://foo.bar/x/page.html";
   {
@@ -390,8 +390,8 @@ TEST(RobotsUnittest, ID_LongestMatch) {
 // Octets in the URI and robots.txt paths outside the range of the US-ASCII
 // coded character set, and those in the reserved range defined by RFC3986,
 // MUST be percent-encoded as defined by RFC3986 prior to comparison.
-// See REP I-D section "The Allow and Disallow lines".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.2
+// See REP RFC section "The Allow and Disallow lines".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.2
 //
 // NOTE: It's up to the caller to percent encode a URL before passing it to the
 // parser. Percent encoding URIs in the rules is unnecessary.
@@ -445,13 +445,13 @@ TEST(RobotsUnittest, ID_Encoding) {
   }
 }
 
-// The REP I-D defines the following characters that have special meaning in
+// The REP RFC defines the following characters that have special meaning in
 // robots.txt:
 // # - inline comment.
 // $ - end of pattern.
 // * - any number of characters.
-// See REP I-D section "Special Characters".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.3
+// See REP RFC section "Special Characters".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.3
 TEST(RobotsUnittest, ID_SpecialCharacters) {
   {
     const absl::string_view robotstxt =
@@ -926,10 +926,10 @@ TEST(RobotsUnittest, ID_UTF8ByteOrderMarkIsSkipped) {
   EXPECT_EQ(1, report.unknown_directives());
 }
 
-// Google specific: the I-D allows any line that crawlers might need, such as
+// Google specific: the RFC allows any line that crawlers might need, such as
 // sitemaps, which Google supports.
-// See REP I-D section "Other records".
-// https://tools.ietf.org/html/draft-koster-rep#section-2.2.4
+// See REP RFC section "Other records".
+// https://www.rfc-editor.org/rfc/rfc9309.html#section-2.2.4
 TEST(RobotsUnittest, ID_NonStandardLineExample_Sitemap) {
   RobotsStatsReporter report;
   {

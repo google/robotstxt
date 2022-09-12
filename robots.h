@@ -18,7 +18,7 @@
 //
 // This file implements the standard defined by the Robots Exclusion Protocol
 // (REP) internet draft (I-D).
-//   https://tools.ietf.org/html/draft-koster-rep
+//   https://www.rfc-editor.org/rfc/rfc9309.html
 //
 // Google doesn't follow the standard strictly, because there are a lot of
 // non-conforming robots.txt files out there, and we err on the side of

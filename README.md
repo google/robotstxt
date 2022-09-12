@@ -132,8 +132,8 @@ Apache license. See LICENSE for more information.
 To learn more about this project:
 
 *   check out the
-    [internet draft](https://tools.ietf.org/html/draft-koster-rep),
+    [Robots Exclusion Protocol standard](https://www.rfc-editor.org/rfc/rfc9309.html),
 *   how
-    [Google's handling robots.txt](https://developers.google.com/search/reference/robots_txt),
+    [How Google Handles robots.txt](https://developers.google.com/search/reference/robots_txt),
 *   or for a high level overview, the
     [robots.txt page on Wikipedia](https://en.wikipedia.org/wiki/Robots_exclusion_standard).
