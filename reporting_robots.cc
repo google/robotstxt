@@ -18,22 +18,31 @@ namespace googlebot {
 static const std::vector<std::string> kUnsupportedTags = {
     "clean-param", "crawl-delay", "host", "noarchive", "noindex", "nofollow"};
 
-void RobotsParsingReporter::Digest(
-    int line_num,
-    RobotsParsingReporter::RobotsParsedLine::RobotsTagName parsed_tag,
-    bool is_typo) {
-  ABSL_ASSERT(line_num > last_line_seen_);
-  last_line_seen_ = line_num;
+void RobotsParsingReporter::Digest(int line_num,
+                                   RobotsParsedLine::RobotsTagName parsed_tag,
+                                   bool is_typo) {
+  if (line_num > last_line_seen_) {
+    last_line_seen_ = line_num;
+  }
   if (parsed_tag != RobotsParsedLine::kUnknown &&
       parsed_tag != RobotsParsedLine::kUnused) {
     ++valid_directives_;
   }
 
-  RobotsParsingReporter::RobotsParsedLine plr;
-  plr.line_num = line_num;
-  plr.is_typo = is_typo;
-  plr.tag_name = parsed_tag;
-  robots_parse_results_.push_back(plr);
+  RobotsParsedLine& line = robots_parse_results_[line_num];
+  line.line_num = line_num;
+  line.is_typo = is_typo;
+  line.tag_name = parsed_tag;
+}
+
+void RobotsParsingReporter::ReportLineMetadata(int line_num,
+                                               const LineMetadata& metadata) {
+  if (line_num > last_line_seen_) {
+    last_line_seen_ = line_num;
+  }
+  RobotsParsedLine& line = robots_parse_results_[line_num];
+  line.line_num = line_num;
+  line.metadata = metadata;
 }
 
 void RobotsParsingReporter::HandleRobotsStart() {
@@ -49,26 +58,26 @@ void RobotsParsingReporter::HandleUserAgent(int line_num,
 }
 void RobotsParsingReporter::HandleAllow(int line_num,
                                         absl::string_view line_value) {
-  Digest(line_num, RobotsParsingReporter::RobotsParsedLine::kAllow,
+  Digest(line_num, RobotsParsedLine::kAllow,
          false /* we don't accept typos for sallow keys */);
 }
 void RobotsParsingReporter::HandleDisallow(int line_num,
                                            absl::string_view line_value) {
-  Digest(line_num, RobotsParsingReporter::RobotsParsedLine::kDisallow,
+  Digest(line_num, RobotsParsedLine::kDisallow,
          false /* typo info not yet available */);
 }
 void RobotsParsingReporter::HandleSitemap(int line_num,
                                           absl::string_view line_value) {
-  Digest(line_num, RobotsParsingReporter::RobotsParsedLine::kSitemap,
+  Digest(line_num, RobotsParsedLine::kSitemap,
          false /* we don't accept typos for sitemap keys */);
 }
 void RobotsParsingReporter::HandleUnknownAction(int line_num,
                                                 absl::string_view action,
                                                 absl::string_view line_value) {
-  RobotsParsingReporter::RobotsParsedLine::RobotsTagName rtn =
+  RobotsParsedLine::RobotsTagName rtn =
       std::count(kUnsupportedTags.begin(), kUnsupportedTags.end(), action) > 0
-          ? RobotsParsingReporter::RobotsParsedLine::kUnused
-          : RobotsParsingReporter::RobotsParsedLine::kUnknown;
+          ? RobotsParsedLine::kUnused
+          : RobotsParsedLine::kUnknown;
   unused_directives_++;
   Digest(line_num, rtn, false /* by definition these can't be typos */);
 }

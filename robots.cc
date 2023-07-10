@@ -287,7 +287,10 @@ class RobotsTxtParser {
   void Parse();
 
  private:
-  static bool GetKeyAndValueFrom(char ** key, char **value, char *line);
+  // Note that `key` and `value` are only set when `metadata->has_directive
+  // == true`.
+  static void GetKeyAndValueFrom(char** key, char** value, char* line,
+                                 RobotsParseHandler::LineMetadata* metadata);
   static void StripWhitespaceSlowly(char ** s);
 
   void ParseAndEmitLine(int current_line, char* line);
@@ -314,14 +317,25 @@ bool RobotsTxtParser::NeedEscapeValueForKey(const Key& key) {
   (*s)[stripped.size()] = '\0';
 }
 
-bool RobotsTxtParser::GetKeyAndValueFrom(char ** key, char ** value,
-                                         char * line) {
+void RobotsTxtParser::GetKeyAndValueFrom(
+    char** key, char** value, char* line,
+    RobotsParseHandler::LineMetadata* metadata) {
   // Remove comments from the current robots.txt line.
   char* const comment = strchr(line, '#');
   if (nullptr != comment) {
-          *comment = '\0';
+    metadata->has_comment = true;
+    *comment = '\0';
   }
   StripWhitespaceSlowly(&line);
+  // If the line became empty after removing the comment, return.
+  if (strlen(line) == 0) {
+    if (metadata->has_comment) {
+      metadata->is_comment = true;
+    } else {
+      metadata->is_empty = true;
+    }
+    return;
+  }
 
   // Rules must match the following pattern:
   //   <key>[ \t]*:[ \t]*<value>
@@ -339,12 +353,12 @@ bool RobotsTxtParser::GetKeyAndValueFrom(char ** key, char ** value,
         // sequences of non-whitespace characters.  If we get here, there were
         // more than 2 such sequences since we stripped trailing whitespace
         // above.
-        return false;
+        return;
       }
     }
   }
   if (nullptr == sep) {
-    return false;                     // Couldn't find a separator.
+    return;                     // Couldn't find a separator.
   }
 
   *key = line;                        // Key starts at beginning of line.
@@ -354,18 +368,23 @@ bool RobotsTxtParser::GetKeyAndValueFrom(char ** key, char ** value,
   if (strlen(*key) > 0) {
     *value = 1 + sep;                 // Value starts after the separator.
     StripWhitespaceSlowly(value);     // Get rid of any leading whitespace.
-    return true;
+    metadata->has_directive = true;
+    return;
   }
-  return false;
 }
 
 void RobotsTxtParser::ParseAndEmitLine(int current_line, char* line) {
   char* string_key;
   char* value;
-  if (!GetKeyAndValueFrom(&string_key, &value, line)) {
+  RobotsParseHandler::LineMetadata line_metadata;
+  // Note that `string_key` and `value` are only set when
+  // `line_metadata->has_directive == true`.
+  GetKeyAndValueFrom(&string_key, &value, line, &line_metadata);
+  handler_->ReportLineMetadata(current_line, line_metadata);
+
+  if (!line_metadata.has_directive) {
     return;
   }
-
   Key key;
   key.Parse(string_key);
   if (NeedEscapeValueForKey(key)) {
