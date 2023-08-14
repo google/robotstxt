@@ -26,7 +26,7 @@
 //
 // An more user-friendly description of how Google handles robots.txt can be
 // found at:
-//   https://developers.google.com/search/reference/robots_txt
+//   https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt
 //
 // This library provides a low-level parser for robots.txt (ParseRobotsTxt()),
 // and a matcher for URLs against a robots.txt (class RobotsMatcher).
@@ -74,6 +74,10 @@ class RobotsParseHandler {
     // Indicates that the line has a valid robots.txt directive and one of the
     // `Handle*` methods will be called.
     bool has_directive = false;
+    // Indicates that the found directive is one of the acceptable typo variants
+    // of the directive. See the key functions in ParsedRobotsKey for accepted
+    // typos.
+    bool is_acceptable_typo = false;
   };
 
   virtual void ReportLineMetadata(int line_num, const LineMetadata& metadata) {}
@@ -150,7 +154,7 @@ class RobotsMatcher : protected RobotsParseHandler {
   bool ever_seen_specific_agent() const;
 
   // Returns the line that matched or 0 if none matched.
-  const int matching_line() const;
+  int matching_line() const;
 
  protected:
   // Parse callbacks.
@@ -159,7 +163,7 @@ class RobotsMatcher : protected RobotsParseHandler {
   void HandleRobotsStart() override;
   void HandleRobotsEnd() override {}
 
-  void HandleUserAgent(int line_num, absl::string_view value) override;
+  void HandleUserAgent(int line_num, absl::string_view user_agent) override;
   void HandleAllow(int line_num, absl::string_view value) override;
   void HandleDisallow(int line_num, absl::string_view value) override;
 

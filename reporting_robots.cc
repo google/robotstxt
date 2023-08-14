@@ -4,8 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "absl/base/macros.h"
-#include "absl/log/check.h"
+#include "absl/strings/string_view.h"
 
 namespace googlebot {
 // The kUnsupportedTags tags are popular tags in robots.txt files, but Google
@@ -42,6 +41,7 @@ void RobotsParsingReporter::ReportLineMetadata(int line_num,
   }
   RobotsParsedLine& line = robots_parse_results_[line_num];
   line.line_num = line_num;
+  line.is_typo = metadata.is_acceptable_typo;
   line.metadata = metadata;
 }
 

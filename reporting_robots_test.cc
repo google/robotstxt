@@ -1,7 +1,14 @@
 #include "reporting_robots.h"
 
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "gtest/gtest.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
+#include "absl/strings/string_view.h"
+#include "robots.h"
 
 using ::googlebot::RobotsParsedLine;
 using ::googlebot::RobotsParseHandler;
@@ -13,7 +20,8 @@ std::string LineMetadataToString(const RobotsParseHandler::LineMetadata& line) {
   return absl::StrCat("{ is_empty: ", line.is_empty,
                       " has_directive: ", line.has_directive,
                       " has_comment: ", line.has_comment,
-                      " is_comment: ", line.is_comment, " }");
+                      " is_comment: ", line.is_comment,
+                      " is_acceptable_typo: ", line.is_acceptable_typo, " }");
 }
 
 std::string TagNameToString(RobotsParsedLine::RobotsTagName tag_name) {
@@ -81,20 +89,24 @@ bool operator==(const RobotsParsedLine& lhs, const RobotsParsedLine& rhs) {
 TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
   RobotsParsingReporter report;
   static const char kSimpleFile[] =
-      "User-Agent: foo\n"         // 1
-      "Allow: /some/path\n"       // 2
-      "User-Agent: bar # no\n"    // 3
-      "absolutely random line\n"  // 4
-      "#so comment, much wow\n"   // 5
-      "\n"                        // 6
-      "unicorns: /extinct\n"      // 7
-      "noarchive: /some\n"        // 8
-      "Disallow: /\n"             // 9
-      "Error #and comment\n";     // 10
-                                  // 11 (from \n)
+      "User-Agent: foo\n"                     // 1
+      "Allow: /some/path\n"                   // 2
+      "User-Agent: bar # no\n"                // 3
+      "absolutely random line\n"              // 4
+      "#so comment, much wow\n"               // 5
+      "\n"                                    // 6
+      "unicorns: /extinct\n"                  // 7
+      "noarchive: /some\n"                    // 8
+      "Disallow: /\n"                         // 9
+      "Error #and comment\n"                  // 10
+      "useragent: baz\n"                      // 11
+      "disallaw: /some\n"                     // 12
+      "site-map: https://e/s.xml #comment\n"  // 13
+      "sitemap: https://e/t.xml\n";           // 14
+                                              // 15 (from \n)
   googlebot::ParseRobotsTxt(kSimpleFile, &report);
-  EXPECT_EQ(4, report.valid_directives());
-  EXPECT_EQ(11, report.last_line_seen());
+  EXPECT_EQ(8, report.valid_directives());
+  EXPECT_EQ(15, report.last_line_seen());
   EXPECT_EQ(report.parse_results().size(), report.last_line_seen());
   std::vector<absl::string_view> lines = absl::StrSplit(kSimpleFile, '\n');
 
@@ -218,10 +230,62 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
                            .is_comment = false,
                            .has_directive = false,
                        }});
-  // For line 11 (which is empty and comes from the last \n)
+  // For line "useragent: baz\n";         // 11
   expectLineToParseTo(
       lines, report.parse_results(),
       RobotsParsedLine{.line_num = 11,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kUserAgent,
+                       .is_typo = true,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = false,
+                           .is_comment = false,
+                           .has_directive = true,
+                           .is_acceptable_typo = true,
+                       }});
+  // For line "disallaw: /some\n"         // 12
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 12,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kDisallow,
+                       .is_typo = true,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = false,
+                           .is_comment = false,
+                           .has_directive = true,
+                           .is_acceptable_typo = true,
+                       }});
+  // For line "site-map: https://e/s.xml #comment\n"  // 13;
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 13,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kSitemap,
+                       .is_typo = true,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = true,
+                           .is_comment = false,
+                           .has_directive = true,
+                           .is_acceptable_typo = true,
+                       }});
+  // For line "sitemap: https://e/t.xml\n"  // 14;
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 14,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kSitemap,
+                       .is_typo = false,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = false,
+                           .is_comment = false,
+                           .has_directive = true,
+                           .is_acceptable_typo = false,
+                       }});
+  // For line 15 (which is empty and comes from the last \n)
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 15,
                        .tag_name = RobotsParsedLine::RobotsTagName::kUnknown,
                        .is_typo = false,
                        .metadata = RobotsParseHandler::LineMetadata{
