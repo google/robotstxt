@@ -302,7 +302,8 @@ class RobotsTxtParser {
                                  RobotsParseHandler::LineMetadata* metadata);
   static void StripWhitespaceSlowly(char ** s);
 
-  void ParseAndEmitLine(int current_line, char* line);
+  void ParseAndEmitLine(int current_line, char* line,
+                        bool* line_too_long_strict);
   bool NeedEscapeValueForKey(const Key& key);
 
   absl::string_view robots_body_;
@@ -382,13 +383,15 @@ void RobotsTxtParser::GetKeyAndValueFrom(
   }
 }
 
-void RobotsTxtParser::ParseAndEmitLine(int current_line, char* line) {
+void RobotsTxtParser::ParseAndEmitLine(int current_line, char* line,
+                                       bool* line_too_long_strict) {
   char* string_key;
   char* value;
   RobotsParseHandler::LineMetadata line_metadata;
   // Note that `string_key` and `value` are only set when
   // `line_metadata->has_directive == true`.
   GetKeyAndValueFrom(&string_key, &value, line, &line_metadata);
+  line_metadata.is_line_too_long = *line_too_long_strict;
   if (!line_metadata.has_directive) {
     handler_->ReportLineMetadata(current_line, line_metadata);
     return;
@@ -416,12 +419,14 @@ void RobotsTxtParser::Parse() {
   // that max url length of 2KB. We want some padding for
   // UTF-8 encoding/nulls/etc. but a much smaller bound would be okay as well.
   // If so, we can ignore the chars on a line past that.
-  const int kMaxLineLen = 2083 * 8;
+  const int kBrowserMaxLineLen = 2083;
+  const int kMaxLineLen = kBrowserMaxLineLen * 8;
   // Allocate a buffer used to process the current line.
   char* const line_buffer = new char[kMaxLineLen];
   // last_line_pos is the last writeable pos within the line array
   // (only a final '\0' may go here).
   const char* const line_buffer_end = line_buffer + kMaxLineLen - 1;
+  bool line_too_long_strict = false;
   char* line_pos = line_buffer;
   int line_num = 0;
   size_t bom_pos = 0;
@@ -442,6 +447,8 @@ void RobotsTxtParser::Parse() {
         // Put in next spot on current line, as long as there's room.
         if (line_pos < line_buffer_end) {
           *(line_pos++) = ch;
+        } else {
+          line_too_long_strict = true;
         }
       } else {                         // Line-ending character char case.
         *line_pos = '\0';
@@ -450,7 +457,8 @@ void RobotsTxtParser::Parse() {
         const bool is_CRLF_continuation =
             (line_pos == line_buffer) && last_was_carriage_return && ch == 0x0A;
         if (!is_CRLF_continuation) {
-          ParseAndEmitLine(++line_num, line_buffer);
+          ParseAndEmitLine(++line_num, line_buffer, &line_too_long_strict);
+          line_too_long_strict = false;
         }
         line_pos = line_buffer;
         last_was_carriage_return = (ch == 0x0D);
@@ -458,7 +466,7 @@ void RobotsTxtParser::Parse() {
     }
   }
   *line_pos = '\0';
-  ParseAndEmitLine(++line_num, line_buffer);
+  ParseAndEmitLine(++line_num, line_buffer, &line_too_long_strict);
   handler_->HandleRobotsEnd();
   delete [] line_buffer;
 }

@@ -1,12 +1,10 @@
 #ifndef THIRD_PARTY_ROBOTSTXT_REPORTING_ROBOTS_H_
 #define THIRD_PARTY_ROBOTSTXT_REPORTING_ROBOTS_H_
 
-#include <algorithm>
-#include <string>
 #include <vector>
 
 #include "absl/container/btree_map.h"
-#include "absl/log/check.h"
+#include "absl/strings/string_view.h"
 #include "robots.h"
 
 namespace googlebot {
@@ -62,8 +60,7 @@ class RobotsParsingReporter : public googlebot::RobotsParseHandler {
   }
 
  private:
-  void Digest(int line_num, RobotsParsedLine::RobotsTagName parsed_tag,
-              bool is_typo);
+  void Digest(int line_num, RobotsParsedLine::RobotsTagName parsed_tag);
 
   // Indexed and sorted by line number.
   absl::btree_map<int, RobotsParsedLine> robots_parse_results_;

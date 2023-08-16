@@ -21,7 +21,8 @@ std::string LineMetadataToString(const RobotsParseHandler::LineMetadata& line) {
                       " has_directive: ", line.has_directive,
                       " has_comment: ", line.has_comment,
                       " is_comment: ", line.is_comment,
-                      " is_acceptable_typo: ", line.is_acceptable_typo, " }");
+                      " is_acceptable_typo: ", line.is_acceptable_typo,
+                      " is_line_too_long: ", line.is_line_too_long, " }");
 }
 
 std::string TagNameToString(RobotsParsedLine::RobotsTagName tag_name) {
@@ -77,7 +78,10 @@ bool operator==(const RobotsParseHandler::LineMetadata& lhs,
                 const RobotsParseHandler::LineMetadata& rhs) {
   return lhs.is_empty == rhs.is_empty &&
          lhs.has_directive == rhs.has_directive &&
-         lhs.has_comment == rhs.has_comment && lhs.is_comment == rhs.is_comment;
+         lhs.has_comment == rhs.has_comment &&
+         lhs.is_comment == rhs.is_comment &&
+         lhs.is_acceptable_typo == rhs.is_acceptable_typo &&
+         lhs.is_line_too_long == rhs.is_line_too_long;
 }
 
 bool operator==(const RobotsParsedLine& lhs, const RobotsParsedLine& rhs) {
@@ -316,4 +320,63 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
   googlebot::ParseRobotsTxt(kMacFile, &report);
   EXPECT_EQ(4, report.valid_directives());
   EXPECT_EQ(7, report.last_line_seen());
+}
+
+TEST(RobotsUnittest, LinesTooLongReportedCorrectly) {
+  RobotsParsingReporter report;
+  const int kMaxLineLen = 2084 * 8;
+  std::string allow = "allow: /\n";
+  std::string disallow = "disallow: ";
+  std::string robotstxt = "user-agent: foo\n";
+  std::string longline = "/x/";
+  while (longline.size() < kMaxLineLen) {
+    absl::StrAppend(&longline, "a");
+  }
+  absl::StrAppend(&robotstxt, disallow, longline, "\n", allow);
+
+  googlebot::ParseRobotsTxt(robotstxt, &report);
+  EXPECT_EQ(3, report.valid_directives());
+  EXPECT_EQ(4, report.last_line_seen());
+  EXPECT_EQ(report.parse_results().size(), report.last_line_seen());
+  std::vector<absl::string_view> lines = absl::StrSplit(robotstxt, '\n');
+
+  // For line "user-agent: foo\n"       // 1
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 1,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kUserAgent,
+                       .is_typo = false,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = false,
+                           .is_comment = false,
+                           .has_directive = true,
+                           .is_line_too_long = false,
+                       }});
+  // For line "disallow: /x/a[...]a\n"  // 2
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 2,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kDisallow,
+                       .is_typo = false,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = false,
+                           .is_comment = false,
+                           .has_directive = true,
+                           .is_line_too_long = true,
+                       }});
+  // For line "allow: /\n"              // 3
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 3,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kAllow,
+                       .is_typo = false,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = false,
+                           .is_comment = false,
+                           .has_directive = true,
+                           .is_line_too_long = false,
+                       }});
 }
