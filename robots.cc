@@ -365,6 +365,7 @@ void RobotsTxtParser::GetKeyAndValueFrom(
         // above.
         return;
       }
+      metadata->is_missing_colon_separator = true;
     }
   }
   if (nullptr == sep) {

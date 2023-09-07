@@ -17,12 +17,16 @@ using ::googlebot::RobotsParsingReporter;
 namespace {
 // Allows debugging the contents of the LineMetadata struct.
 std::string LineMetadataToString(const RobotsParseHandler::LineMetadata& line) {
-  return absl::StrCat("{ is_empty: ", line.is_empty,
-                      " has_directive: ", line.has_directive,
-                      " has_comment: ", line.has_comment,
-                      " is_comment: ", line.is_comment,
-                      " is_acceptable_typo: ", line.is_acceptable_typo,
-                      " is_line_too_long: ", line.is_line_too_long, " }");
+  // clang-format off
+  return absl::StrCat(
+      "{ is_empty: ", line.is_empty,
+      " has_directive: ", line.has_directive,
+      " has_comment: ", line.has_comment,
+      " is_comment: ", line.is_comment,
+      " is_acceptable_typo: ", line.is_acceptable_typo,
+      " is_line_too_long: ", line.is_line_too_long,
+      " is_missing_colon_separator: ", line.is_missing_colon_separator, " }");
+  // clang-format on
 }
 
 std::string TagNameToString(RobotsParsedLine::RobotsTagName tag_name) {
@@ -81,7 +85,8 @@ bool operator==(const RobotsParseHandler::LineMetadata& lhs,
          lhs.has_comment == rhs.has_comment &&
          lhs.is_comment == rhs.is_comment &&
          lhs.is_acceptable_typo == rhs.is_acceptable_typo &&
-         lhs.is_line_too_long == rhs.is_line_too_long;
+         lhs.is_line_too_long == rhs.is_line_too_long &&
+         lhs.is_missing_colon_separator == rhs.is_missing_colon_separator;
 }
 
 bool operator==(const RobotsParsedLine& lhs, const RobotsParsedLine& rhs) {
@@ -95,7 +100,7 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
   static const char kSimpleFile[] =
       "User-Agent: foo\n"                     // 1
       "Allow: /some/path\n"                   // 2
-      "User-Agent: bar # no\n"                // 3
+      "User-Agent bar # no\n"                 // 3
       "absolutely random line\n"              // 4
       "#so comment, much wow\n"               // 5
       "\n"                                    // 6
@@ -125,6 +130,7 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
                            .has_comment = false,
                            .is_comment = false,
                            .has_directive = true,
+                           .is_missing_colon_separator = false,
                        }});
   // For line "Allow: /some/path\n"       // 2
   expectLineToParseTo(
@@ -138,7 +144,7 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
                            .is_comment = false,
                            .has_directive = true,
                        }});
-  // For line "User-Agent: bar # no\n"    // 3
+  // For line "User-Agent bar # no\n"    // 3
   expectLineToParseTo(
       lines, report.parse_results(),
       RobotsParsedLine{.line_num = 3,
@@ -149,6 +155,7 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
                            .has_comment = true,
                            .is_comment = false,
                            .has_directive = true,
+                           .is_missing_colon_separator = true,
                        }});
   // For line "absolutely random line\n"  // 4
   expectLineToParseTo(
@@ -161,6 +168,7 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
                            .has_comment = false,
                            .is_comment = false,
                            .has_directive = false,
+                           .is_missing_colon_separator = false,
                        }});
   // For line "#so comment, much wow\n"   // 5
   expectLineToParseTo(
@@ -233,6 +241,7 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
                            .has_comment = true,
                            .is_comment = false,
                            .has_directive = false,
+                           .is_missing_colon_separator = false,
                        }});
   // For line "useragent: baz\n";         // 11
   expectLineToParseTo(

@@ -80,6 +80,8 @@ class RobotsParseHandler {
     bool is_acceptable_typo = false;
     // Indicates that the line is too long, specifically over 2083 * 8 bytes.
     bool is_line_too_long = false;
+    // Indicates that the key-value pair is missing the colon separator.
+    bool is_missing_colon_separator = false;
   };
 
   virtual void ReportLineMetadata(int line_num, const LineMetadata& metadata) {}
