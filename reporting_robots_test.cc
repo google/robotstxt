@@ -111,11 +111,12 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
       "useragent: baz\n"                      // 11
       "disallaw: /some\n"                     // 12
       "site-map: https://e/s.xml #comment\n"  // 13
-      "sitemap: https://e/t.xml\n";           // 14
-                                              // 15 (from \n)
+      "sitemap: https://e/t.xml\n"            // 14
+      "Noarchive: /someCapital\n";            // 15
+                                              // 16 (from \n)
   googlebot::ParseRobotsTxt(kSimpleFile, &report);
   EXPECT_EQ(8, report.valid_directives());
-  EXPECT_EQ(15, report.last_line_seen());
+  EXPECT_EQ(16, report.last_line_seen());
   EXPECT_EQ(report.parse_results().size(), report.last_line_seen());
   std::vector<absl::string_view> lines = absl::StrSplit(kSimpleFile, '\n');
 
@@ -295,10 +296,22 @@ TEST(RobotsUnittest, LinesNumbersAreCountedCorrectly) {
                            .has_directive = true,
                            .is_acceptable_typo = false,
                        }});
-  // For line 15 (which is empty and comes from the last \n)
+  // For line "Noarchive: /someCapital\n"        // 15
   expectLineToParseTo(
       lines, report.parse_results(),
       RobotsParsedLine{.line_num = 15,
+                       .tag_name = RobotsParsedLine::RobotsTagName::kUnused,
+                       .is_typo = false,
+                       .metadata = RobotsParseHandler::LineMetadata{
+                           .is_empty = false,
+                           .has_comment = false,
+                           .is_comment = false,
+                           .has_directive = true,
+                       }});
+  // For line 16 (which is empty and comes from the last \n)
+  expectLineToParseTo(
+      lines, report.parse_results(),
+      RobotsParsedLine{.line_num = 16,
                        .tag_name = RobotsParsedLine::RobotsTagName::kUnknown,
                        .is_typo = false,
                        .metadata = RobotsParseHandler::LineMetadata{

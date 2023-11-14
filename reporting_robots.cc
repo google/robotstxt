@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/strings/ascii.h"
 #include "absl/strings/string_view.h"
 
 namespace googlebot {
@@ -69,7 +70,8 @@ void RobotsParsingReporter::HandleUnknownAction(int line_num,
                                                 absl::string_view action,
                                                 absl::string_view line_value) {
   RobotsParsedLine::RobotsTagName rtn =
-      std::count(kUnsupportedTags.begin(), kUnsupportedTags.end(), action) > 0
+      std::count(kUnsupportedTags.begin(), kUnsupportedTags.end(),
+                 absl::AsciiStrToLower(action)) > 0
           ? RobotsParsedLine::kUnused
           : RobotsParsedLine::kUnknown;
   unused_directives_++;
