@@ -1,3 +1,4 @@
+load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -59,4 +60,25 @@ cc_binary(
     deps = [
         ":robots",
     ],
+)
+
+cc_binary(
+    name = "robots_js",
+    srcs = ["robots_wasm.cc"],
+    linkopts = [
+        "-l",
+        "embind",
+        "-s",
+        "EXPORTED_FUNCTIONS=_IsAllowed",
+        "-s",
+        "EXPORTED_RUNTIME_METHODS=ccall,cwrap",
+    ],
+    deps = [
+        ":robots",
+    ],
+)
+
+wasm_cc_binary(
+    name = "robots_wasm",
+    cc_target = ":robots_js",
 )
