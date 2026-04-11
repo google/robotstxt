@@ -507,6 +507,8 @@ void ParseRobotsTxt(absl::string_view robots_body,
   parser.Parse();
 }
 
+void RobotsParseHandler::ReportLineMetadata(int, const LineMetadata&) {}
+
 RobotsMatcher::RobotsMatcher()
     : seen_global_agent_(false),
       seen_specific_agent_(false),
