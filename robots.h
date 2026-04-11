@@ -98,7 +98,7 @@ class RobotsParseHandler {
     bool is_missing_colon_separator = false;
   };
 
-  virtual void ReportLineMetadata(int line_num, const LineMetadata& metadata) {}
+  virtual void ReportLineMetadata(int line_num, const LineMetadata& metadata);
 };
 
 // Parses body of a robots.txt and emits parse callbacks. This will accept
