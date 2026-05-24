@@ -80,7 +80,7 @@ class RobotsMatchStrategy {
     absl::string_view path, absl::string_view pattern) {
   const size_t pathlen = path.length();
   absl::FixedArray<size_t> pos(pathlen + 1);
-  int numpos;
+  size_t numpos;
 
   // The pos[] array holds a sorted list of indexes of 'path', with length
   // 'numpos'.  At the start and end of each iteration of the main loop below,
@@ -94,17 +94,17 @@ class RobotsMatchStrategy {
 
   for (auto pat = pattern.begin(); pat != pattern.end(); ++pat) {
     if (*pat == '$' && pat + 1 == pattern.end()) {
-      return (pos[numpos - 1] == pathlen);
+      return (numpos > 0 && pos[numpos - 1] == pathlen);
     }
     if (*pat == '*') {
       numpos = pathlen - pos[0] + 1;
-      for (int i = 1; i < numpos; i++) {
+      for (size_t i = 1; i < numpos; i++) {
         pos[i] = pos[i-1] + 1;
       }
     } else {
       // Includes '$' when not at end of pattern.
-      int newnumpos = 0;
-      for (int i = 0; i < numpos; i++) {
+      size_t newnumpos = 0;
+      for (size_t i = 0; i < numpos; i++) {
         if (pos[i] < pathlen && path[pos[i]] == *pat) {
           pos[newnumpos++] = pos[i] + 1;
         }
@@ -602,11 +602,12 @@ void RobotsMatcher::HandleRobotsStart() {
 /*static*/ absl::string_view RobotsMatcher::ExtractUserAgent(
     absl::string_view user_agent) {
   // Allowed characters in user-agent are [a-zA-Z_-].
-  const char* end = user_agent.data();
-  while (absl::ascii_isalpha(*end) || *end == '-' || *end == '_') {
-    ++end;
+  const char* p = user_agent.data();
+  const char* end = p + user_agent.length();
+  while (p < end && (absl::ascii_isalpha(*p) || *p == '-' || *p == '_')) {
+    ++p;
   }
-  return user_agent.substr(0, end - user_agent.data());
+  return user_agent.substr(0, p - user_agent.data());
 }
 
 /*static*/ bool RobotsMatcher::IsValidUserAgentToObey(
